@@ -1,0 +1,72 @@
+.skeleton-masonry {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); 
+  grid-auto-rows: 10px;
+  gap: 16px;
+  padding: 20px;
+  grid-auto-flow: dense;
+}
+
+.skeleton-item {
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: loadingAnimation 1.5s infinite linear;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.size-1 {
+  grid-row-end: span 12;
+} 
+.size-2 {
+  grid-row-end: span 18;
+} 
+.size-3 {
+  grid-row-end: span 16;
+} 
+.size-4 {
+  grid-row-end: span 14;
+} 
+.size-5 {
+  grid-row-end: span 17;
+} 
+
+@keyframes loadingAnimation {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 1746px) {
+  .skeleton-masonry {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+@media (max-width: 1509px) {
+  .skeleton-masonry {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+@media (max-width: 1272px) {
+  .skeleton-masonry {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (max-width: 1035px) {
+  .skeleton-masonry {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 798px) {
+  .skeleton-masonry {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 475px) {
+  .skeleton-masonry {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
