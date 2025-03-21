@@ -1,0 +1,24 @@
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.search {
+  display: flex;
+  flex: 1;
+  padding: 16px;
+  align-items: center;
+  gap: 16px;
+  background: #f1f1f1;
+  border-radius: 16px;
+}
+
+.search input {
+  flex: 1;
+  background-color: transparent;
+  border: none;
+  font-size: 18px;
+  outline: none;
+}
