@@ -6,14 +6,21 @@ const GalleryItem = ({ item }) => {
 
 const optimizedHeight = (372 * item.height) / item.width
 
+console.log("GalleryItem item:", item);
+
+
   return (
     <div
       className="galleryItem"
       style={{ gridRowEnd: `span ${Math.ceil(item.height / 100)}` }}
     >
       {/* <img src={item.media} alt="" /> */}
-      <Image path={item.media} alt="" w={372} h={optimizedHeight}/>
-      <Link to={`/pin/${item._id}`} className="overlay" />
+<Image 
+  path={item.media ? `/public/pins/${item.media}` : "/general/noImage.png"} 
+  alt="pin" 
+  w={372} 
+  h={optimizedHeight}
+/>      <Link to={`/pin/${item._id}`} className="overlay" />
       <button className="saveButton">Save</button>
       <div className="overlayIcons">
         <button>

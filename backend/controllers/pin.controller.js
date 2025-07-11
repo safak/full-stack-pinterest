@@ -14,6 +14,7 @@ export const getPins = async (req, res) => {
   const boardId = req.query.boardId;
   const LIMIT = 21;
 
+  
   const pins = await Pin.find(
     search
       ? {

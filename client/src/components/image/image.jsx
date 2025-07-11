@@ -1,21 +1,20 @@
 import { IKImage } from "imagekitio-react";
 
-const Image = ({ path, src, alt, className, w, h }) => {
+const Image = ({ path, w, h, alt = "", className = "" }) => {
+  const isValidPath = path && path.trim() !== "";
+
+  if (!isValidPath) {
+    return <img src="/general/noAvatar.png" alt={alt} className={className} />;
+  }
+
   return (
     <IKImage
-      urlEndpoint={import.meta.env.VITE_URL_IK_ENDPOINT}
       path={path}
-      src={src}
-      transformation={[
-        {
-          height: h,
-          width: w,
-        },
-      ]}
-      alt={alt}
+      transformation={w && h ? [{ width: w, height: h }] : []}
       loading="lazy"
+      lqip={{ active: true }}
+      alt={alt}
       className={className}
-      lqip={{ active: true, quality: 20 }}
     />
   );
 };
