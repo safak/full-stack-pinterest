@@ -4,6 +4,7 @@ import TopBar from "../../components/topBar/topBar";
 import "./mainLayout.css";
 
 const MainLayout = () => {
+  console.log("Rendering MainLayout");
   return (
     <div className="app">
       <LeftBar />
