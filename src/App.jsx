@@ -2,7 +2,13 @@ import './app.css'
 
 const App = () => {
   return (
-    <div>Hello World</div>
+    <div className='app'>
+      <LeftBar/>
+      <div className='content'>
+        <TopBar/>
+        <Gallery/>
+      </div>
+    </div>
   )
 }
 
