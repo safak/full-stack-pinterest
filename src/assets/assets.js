@@ -15,6 +15,7 @@ import textIcon from './icons/text.png';
 import updatesIcon from './icons/updates.svg';
 import uploadIcon from './icons/upload.svg';
 import arrowIcon from './icons/arrow.svg';
+import downloadIcon from './icons/download.svg';
 
 
 import pin1 from './pins/pin1.jpeg';
@@ -63,6 +64,7 @@ export const icons = {
     uploadIcon,
     updatesIcon,
     arrowIcon,
+    downloadIcon,
 }
 
 // TEMPORARY
