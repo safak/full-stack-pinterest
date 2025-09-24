@@ -1,7 +1,7 @@
 import React from 'react';
 import "./topBar.css";
-import { icons } from "../../general/assets";
-import UserButton from '../userButton/userButton.jsx';
+import {icons} from "../../assets/assets.js";
+import UserButton from '../userButton/UserButton.jsx';
 
 const TopBar = () => {
   return (

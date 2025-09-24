@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./userButton.css";
-import { icons } from "../../general/assets";
+import {icons} from "../../assets/assets.js"
 
 const UserButton = () => {
   const currentUser = true; // placeholder for authentication state

@@ -1,6 +1,6 @@
 import React from "react";
 import "./leftBar.css";
-import { icons } from "../../general/assets.js";
+import { icons } from "../../assets/assets.js";
 
 const LeftBar = () => {
   return (

@@ -37,11 +37,12 @@
     margin: 2px;
     cursor: pointer;
     font-size: 15px;
-    color: #3e4444;
+    color: black;
+    background-color: white;
 }
 
 .userOption:hover{
-    background: rgba(0, 0, 255, 0.404);
+    background: rgba(245, 245, 245, 0.399);
 }
 
 .loginLink{
@@ -50,10 +51,22 @@
     border-radius: 32px;
     color: #3e4444;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .loginLink:hover{
     background: #f1f1f1;
 
 }
+
+/* @media(max-width: 450px) {
+    .userButton{
+        display: none;
+    }
+} */
+
+@media only screen and (max-width: 600px){
+    .userButton {
+        display: none;
+    }
+} 
