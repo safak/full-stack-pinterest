@@ -7,8 +7,10 @@ import SearchPage from "./routes/searchPage/searchPage.jsx";
 import AuthPage from "./routes/authPage/authPage.jsx";
 import {Routes, Route} from "react-router-dom"
 import MainLayout from "./routes/layouts/MainLayout.jsx";
+import { ImageKitProvider } from '@imagekit/react';
 
 const App = () => {
+
   return (
     <div className="app">
       <Routes>

@@ -1,9 +1,11 @@
-.gallery{
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 16px;
-    grid-auto-rows: 10px;
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* responsive */
+  grid-auto-rows: 10px; /* tiny row height for masonry math */
+  gap: 16px; /* ✅ space between columns & rows */
+  padding: 16px;
 }
+
 
 @media (max-width: 1746px){
     .gallery{
