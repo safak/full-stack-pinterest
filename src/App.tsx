@@ -1,33 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Gallery from './components/gallery/Gallery';
+import PublicNavbar from './components/navbar/PublicNavbar'
+import AppSidebar from './components/sidebar/Sidebar'
+import Topbar from './components/topBar/Topbar';
+import { SidebarProvider } from './components/ui/sidebar'
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const isUserLoggedIn = true;
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className='w-full h-screen flex'>
+        {isUserLoggedIn && (
+          <div className='flex'>
+            <SidebarProvider defaultOpen={true} className='border-2 max-w-18'>
+              <AppSidebar />
+            </SidebarProvider>
+          </div>
+        )}
+        <div className='flex-1'>
+          {isUserLoggedIn ? <Topbar /> : <PublicNavbar />}
+          <div className='w-full'></div>
+          <Gallery />
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
