@@ -56,7 +56,7 @@ const items = [
 
 function AppSidebar() {
   return (
-    <Sidebar className="max-w-18" variant="inset" collapsible="none">
+    <Sidebar className="max-w-18" variant="floating" collapsible="none">
       <SidebarHeader className="mb-4">
         <SidebarMenu>
           <SidebarMenuItem className="text-center">

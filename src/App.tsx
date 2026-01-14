@@ -18,7 +18,6 @@ function App() {
         )}
         <div className='flex-1'>
           {isUserLoggedIn ? <Topbar /> : <PublicNavbar />}
-          <div className='w-full'></div>
           <Gallery />
         </div>
       </div>
