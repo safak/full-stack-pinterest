@@ -1,7 +1,7 @@
 import GalleryItem from "../galleryItem/GalleryItem"
 
 // TEMPORARY
-const items = [
+export const items = [
   {
     id: 1,
     media: "/pins/pin1.jpeg",
@@ -156,12 +156,12 @@ const items = [
 
 const Gallery = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 p-4" >
-      {items.map((item) => (
-        <div className="col-span-1 bg-none">
-          <GalleryItem key={item.id} media={item.media} width={item.width} height={item.height} />
-        </div>
-      ))}
+    <div className="w-full p-4 mx-auto py-8" >
+      <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-5 xl:columns-6 2xl:columns-7 gap-4 space-y-4">
+        {items.map((item) => (
+          <GalleryItem key={item.id} item={item} />
+        ))}
+      </div>
     </div>
   )
 }
