@@ -1,5 +1,6 @@
 import Gallery from "@/components/gallery/Gallery"
 import ProfileHeader from "@/components/profileHeader/ProfileHeader"
+import SavedCollection from "@/components/savedCollection/SavedCollection"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 
@@ -27,7 +28,7 @@ const ProfilePage = () => {
             Saved
           </Button>
         </div>
-        {selectedCollection === "created" ? (<Gallery />) : (<></>)}
+        {selectedCollection === "created" ? (<Gallery />) : (<SavedCollection />)}
       </div>
     </div>
   )

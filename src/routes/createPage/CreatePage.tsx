@@ -1,7 +1,8 @@
+import { PinCreationForm } from "@/components/pinCreationForm/PinCreationForm"
 
 const CreatePage = () => {
   return (
-    <div>CreatePage</div>
+    <div><PinCreationForm /></div>
   )
 }
 

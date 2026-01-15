@@ -2,13 +2,14 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from "react-router";
 import './index.css';
-import AuthPage from './routes/authPage/AuthPage.tsx';
+
 import CreatePage from './routes/createPage/CreatePage.tsx';
 import Homepage from './routes/homePage/Homepage.tsx';
 import PostPage from './routes/postPage/PostPage.tsx';
 import ProfilePage from './routes/profilePage/ProfilePage.tsx';
 import MainLayout from './routes/layouts/MainLayout.tsx';
 import AuthLayout from './routes/layouts/AuthLayout.tsx';
+import AuthPage from './routes/auth/AuthPage.tsx';
 
 
 createRoot(document.getElementById('root')!).render(
