@@ -5,8 +5,34 @@ import Comments from "../comments/Comments"
 import Image from "../image/Image"
 import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
+import { useGetPin } from "@/hooks/queries/pin.queries"
+import { Spinner } from "../ui/spinner"
 
-const Post = ({ post }: any) => {
+
+const Post = ({ postId }: { postId: string }) => {
+  const { data: post, status, error } = useGetPin(postId);
+
+
+  if (!postId) {
+    return (
+      <div className="flex justify-center text-center text-xl">
+        <p>No post found!</p>
+      </div>
+    )
+  }
+
+  if (status === "pending") {
+    return (
+      <div className="flex justify-center mt-60">
+        <Spinner className="size-12" />
+      </div>
+    )
+  }
+
+  if (status === "error") {
+    return <div>{error.message}</div>
+  }
+
   return (
     <div className="flex flex-col rounded-2xl border min-w-70 min-h-140 h-max py-2 px-4 relative">
       <div className="flex justify-between gap-2 md:gap-6 overflow-x-auto pb-4 w-full sticky top-20.25 z-10 bg-white border-b">
@@ -57,7 +83,7 @@ const Post = ({ post }: any) => {
         </div>
       </div>
       <div className="flex justify-center w-full max-w-120 h-max relative mb-4 min-h-100">
-        <Image item={{ ...post, w: 736 }} />
+        <Image item={{ ...post.data, w: 736 }} />
 
         <div className="absolute bottom-2 flex justify-between items-end w-full px-4">
           <Badge className="bg-gray-800 h-max py-3 px-6 rounded-xl text-md" >AI modified</Badge>
@@ -72,8 +98,7 @@ const Post = ({ post }: any) => {
         </div>
       </div>
       <div className="flex justify-between gap-2 md:gap-6 overflow-x-auto">
-        <Comments />
-        {/* <CommentField /> */}
+        <Comments post={post.data} />
       </div>
     </div>
   )

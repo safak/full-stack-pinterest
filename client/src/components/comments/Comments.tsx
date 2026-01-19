@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import CommentField from "../commentField/CommentField";
 import { Separator } from "../ui/separator";
+import type { PostType } from "@/types";
+import { Link } from "react-router";
 
 export type Comment = {
   id: string;
@@ -19,41 +21,43 @@ const comments: Comment[] = [
     time: "4 mo",
   },
   {
-    id: "1",
+    id: "2",
     username: "hatice an",
     text: "I use it",
     time: "4 mo",
   },
   {
-    id: "1",
+    id: "3",
     username: "hatice an",
     text: "I use it",
     time: "4 mo",
   },
 ];
 
-export default function Comments() {
+export default function Comments({ post }: { post: PostType }) {
   return (
     <div className="flex flex-col justify-center items-center w-full">
-      <div className="flex items-center gap-2 w-full mb-4">
-        <Avatar className="h-8 w-8">
-          <AvatarImage src="" />
-          <AvatarFallback className="text-xs">
-            {"John Doe".charAt(0).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+      <Link className="flex w-full" to={"/user/" + post?.user?._id}>
+        <div className="flex items-center gap-2 w-full mb-4">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={post?.user?.img ?? ""} />
+            <AvatarFallback className="text-xs">
+              {post.user.displayName.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
 
-        <div className="flex-1">
-          <p className="text-sm font-semibold mr-1">
-            {"John Doe"}
-          </p>
+          <div className="flex-1">
+            <p className="text-sm font-semibold mr-1 capitalize">
+              {post.user.displayName}
+            </p>
+          </div>
         </div>
-      </div>
+      </Link>
       <Separator />
       <div className="w-full max-w-xl rounded-2xl bg-white p-4 ">
         {/* Header */}
         <div className="mb-3 flex items-center justify-between">
-          <p className="text-sm font-semibold">1 comment</p>
+          <p className="text-sm font-semibold">{comments?.length || 0}</p>
         </div>
 
         {/* Comments list */}

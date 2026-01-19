@@ -1,6 +1,8 @@
+import type { Pin } from "@/types";
 import GalleryItem from "../galleryItem/GalleryItem"
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { Spinner } from "../ui/spinner";
 
-// TEMPORARY
 export const items = [
   {
     id: 1,
@@ -154,15 +156,31 @@ export const items = [
   },
 ];
 
-const Gallery = () => {
+const Gallery = ({ data, hasNextPage, loadMore }: any) => {
   return (
-    <div className="w-full p-4 mx-auto py-8" >
-      <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-5 xl:columns-6 2xl:columns-7 gap-4 space-y-4">
-        {items.map((item) => (
-          <GalleryItem key={item.id} item={item} />
-        ))}
+    <InfiniteScroll
+      dataLength={data.length}
+      next={loadMore}
+      hasMore={hasNextPage}
+      loader={
+        <div className="flex justify-center">
+          <Spinner />
+        </div>
+      }
+      endMessage={
+        <p style={{ textAlign: 'center' }}>
+          <b>That's all</b>
+        </p>
+      }
+    >
+      <div className="w-full p-4 mx-auto py-8" >
+        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-5 xl:columns-6 2xl:columns-7 gap-4 space-y-4" >
+          {data.map((item: Pin) => (
+            <GalleryItem key={item._id} item={item} />
+          ))}
+        </div>
       </div>
-    </div>
+    </InfiniteScroll>
   )
 }
 

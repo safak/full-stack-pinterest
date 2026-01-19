@@ -2,34 +2,69 @@ import Gallery from "@/components/gallery/Gallery"
 import ProfileHeader from "@/components/profileHeader/ProfileHeader"
 import SavedCollection from "@/components/savedCollection/SavedCollection"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
+import { useGetAllPins } from "@/hooks/queries/pin.queries"
+import { useGetUser } from "@/hooks/queries/user.queries"
 import { useState } from "react"
+import { useParams } from "react-router"
 
 const ProfilePage = () => {
-
+  const { id } = useParams()
   const [selectedCollection, setSelectedCollection] = useState("created")
+
+  const { data: userData, status: statusUser, error: errorUser, } = useGetUser(id || "");
+  console.log("userData", userData);
+
+
+  const { data: pinsResponse, status, error, hasNextPage, fetchNextPage } = useGetAllPins({ userId: userData?.data?._id || "" });
+
+  const allPins = pinsResponse?.pages.flatMap((page) => page.data) || []
+
+  if (statusUser === "pending") {
+    return (
+      <div className="flex justify-center mt-60">
+        <Spinner className="size-12" />
+      </div>
+    )
+  }
+
+  if (statusUser === "error") {
+    return <div>{errorUser.message}</div>
+  }
+
 
   return (
     <div className="flex flex-col">
       <ProfileHeader
-        avatarUrl=""
-        name="★ ° Zar ★ °"
-        username="zrrbooks"
+        avatarUrl={userData.data?.img || ""}
+        name={userData.data?.displayName || "N/A"}
+        username={userData.data?.username || "N/A"}
         followers="2.6k"
         following="10"
         monthlyViews="2.1m"
         bio="✧ dm for photo credit or removal ✧"
       />
-      <div>
-        <div className="flex items-center justify-center gap-2 mt-4">
-          <Button onClick={() => setSelectedCollection("created")} variant="ghost" className={`hover:bg-transparent! text-md font-semibold ${selectedCollection === "created" && "underline underline-offset-8 decoration-2"}`} >
-            Created
-          </Button>
-          <Button onClick={() => setSelectedCollection("saved")} variant="ghost" className={`hover:bg-transparent! text-md font-semibold ${selectedCollection === "saved" && "underline underline-offset-8 decoration-2"}`} >
-            Saved
-          </Button>
+      {status === "pending" ? (
+        <div className="w-full flex mt-6 justify-center">
+          <Spinner />
         </div>
-        {selectedCollection === "created" ? (<Gallery />) : (<SavedCollection />)}
-      </div>
+      ) : status === "error" ? (
+        <div>{error.message}</div>
+      ) : (
+        <div>
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <Button onClick={() => setSelectedCollection("created")} variant="ghost" className={`hover:bg-transparent! text-md font-semibold ${selectedCollection === "created" && "underline underline-offset-8 decoration-2"}`} >
+              Created
+            </Button>
+            <Button onClick={() => setSelectedCollection("saved")} variant="ghost" className={`hover:bg-transparent! text-md font-semibold ${selectedCollection === "saved" && "underline underline-offset-8 decoration-2"}`} >
+              Saved
+            </Button>
+          </div>
+          {selectedCollection === "created" ?
+            (<Gallery data={allPins} loadMore={fetchNextPage} hasNextPage={hasNextPage} />)
+            : (<SavedCollection />)}
+        </div>
+      )}
     </div>
   )
 }

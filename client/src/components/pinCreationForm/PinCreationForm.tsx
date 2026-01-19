@@ -2,19 +2,19 @@
 
 import type React from "react"
 
-import { useState, useCallback } from "react"
+import { Button } from "@/components/ui/button"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { cn } from "@/lib/utils"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { ChevronDown, Upload, X } from "lucide-react"
+import { useCallback, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Upload, ChevronDown, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { cn } from "@/lib/utils"
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20MB for images
 const MAX_VIDEO_SIZE = 200 * 1024 * 1024 // 200MB for videos
@@ -29,7 +29,7 @@ const ACCEPTED_FILE_TYPES = {
 const formSchema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Title must be less than 100 characters"),
   description: z.string().max(500, "Description must be less than 500 characters").optional(),
-  link: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
+  link: z.url("Please enter a valid URL").optional().or(z.literal("")),
   board: z.string().min(1, "Please select a board"),
   taggedTopics: z.array(z.string()).optional(),
 })
@@ -48,6 +48,8 @@ export function PinCreationForm() {
   const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState("")
 
+
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,6 +60,8 @@ export function PinCreationForm() {
       taggedTopics: [],
     },
   })
+
+
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
     setFileError(null)
@@ -124,6 +128,7 @@ export function PinCreationForm() {
     }
 
     console.log("Form submitted:", { ...data, file: uploadedFile.file, tags })
+    // createPin(data)
   }
 
   const boards = [

@@ -6,16 +6,17 @@ import type { CSSProperties } from "react";
 
 import "./galleryItem.css";
 import Image from "../image/Image";
+import type { Pin } from "@/types";
 
 
-export type GalleryItemProps = {
-  id: number | string;
-  media: string;
-  width: number;
-  height: number;
-}
+// export type GalleryItemProps = {
+//   id: number | string;
+//   media: string;
+//   width: number;
+//   height: number;
+// }
 
-const GalleryItem = ({ item, className, style }: { item: GalleryItemProps; className?: string; style?: CSSProperties }) => {
+const GalleryItem = ({ item, className, style }: { item: Pin; className?: string; style?: CSSProperties }) => {
   const navigate = useNavigate();
 
   return (
@@ -24,7 +25,7 @@ const GalleryItem = ({ item, className, style }: { item: GalleryItemProps; class
       <Image item={item} />
       {/* Overlay */}
       <div
-        onClick={() => navigate(`/pin/${item.id}`)}
+        onClick={() => navigate(`/pin/${item._id}`)}
         className={`absolute bg-black/30 rounded-lg top-0 left-0 flex-col justify-between w-full h-full p-4 overlay`} >
         <div className="flex-1 w-full">
           <Button
