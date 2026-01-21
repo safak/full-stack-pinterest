@@ -48,12 +48,12 @@ const Topbar = () => {
           </div>
         </form>
         <div className="w-max flex gap-1 items-center">
-          <a href="/user">
+          <Link to={`/user/${currentUser?._id}`}>
             <Avatar >
               <AvatarImage src={currentUser?.img || "https://github.com/shadcn.png"} />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
-          </a>
+          </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost">
