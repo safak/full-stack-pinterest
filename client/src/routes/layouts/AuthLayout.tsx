@@ -1,8 +1,18 @@
-import { Outlet } from 'react-router';
+import { Outlet, useNavigate } from 'react-router';
 import PublicNavbar from '@/components/navbar/PublicNavbar';
+import useAuthStore from '@/lib/auth-store';
+import { useEffect } from 'react';
 
 
 function AuthLayout() {
+  const { currentUser } = useAuthStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/");
+    }
+  }, [currentUser, navigate]);
   return (
     <>
       <div className='w-full h-screen flex'>

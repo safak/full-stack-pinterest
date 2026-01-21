@@ -3,35 +3,11 @@ import Signup from "@/components/signup/Signup"
 import { useQueryParam } from "@/hooks/use-query-params"
 import { useEffect, useState } from "react"
 
-type LoginCreds = {
-  email: string
-  password: string
-}
-
-type SignupCreds = {
-  email: string
-  password: string
-  dob: string
-}
-
-export type LoginCallback = (creds: LoginCreds) => void
-
-export type SignupCallback = (creds: SignupCreds) => void
-
 export type ChangeModalCallback = (type: "login" | "signup") => void
 
 const AuthPage = () => {
   const authType = useQueryParam("type")
-
   const [authenticationType, setAuthenticationType] = useState("login")
-
-  const handleLogin: LoginCallback = (creds) => {
-    console.log("creds", creds);
-  }
-
-  const handleSignup: SignupCallback = (creds) => {
-    console.log("creds", creds);
-  }
 
   const handleChangeModal: ChangeModalCallback = (type) => {
     setAuthenticationType(type)
@@ -46,9 +22,9 @@ const AuthPage = () => {
   return (
     <div>
       {authenticationType === "login" ? (
-        <Login onLogin={handleLogin} changeModal={handleChangeModal} />
+        <Login changeModal={handleChangeModal} />
       ) : (
-        <Signup onSignup={handleSignup} changeModal={handleChangeModal} />
+        <Signup changeModal={handleChangeModal} />
       )}
     </div>
   )

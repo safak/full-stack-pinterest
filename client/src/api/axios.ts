@@ -5,24 +5,17 @@ import type {
 } from "axios";
 
 import { handleApiError } from "./error-handler";
-// import { getAccessToken } from "@/lib/auth-store";
 
 const api: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 5000,
-  // withCredentials: true,
-  withCredentials: false,
+  // Use cookies (HttpOnly) for auth; do not store tokens in JS.
+  withCredentials: true,
 });
 
 /* ================= REQUEST INTERCEPTOR ================= */
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // const token = getAccessToken();
-
-    // if (token) {
-    //   config.headers.set("Authorization", `Bearer ${token}`);
-    // }
-
     config.headers.set("X-Request-ID", crypto.randomUUID());
 
     return config;

@@ -6,12 +6,16 @@ import {
   DialogTitle
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import type { ChangeModalCallback, LoginCallback } from "@/routes/auth/AuthPage"
+import { useLoginUser } from "@/hooks/mutations/auth.mutations"
+import useAuthStore from "@/lib/auth-store"
+import type { ChangeModalCallback } from "@/routes/auth/AuthPage"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import AppLogo from "../AppLogo"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
+import { Spinner } from "../ui/spinner"
 
 const formSchema = z.object({
   email: z.email("Please enter a valid email address"),
@@ -20,10 +24,11 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>
 
+const Login = ({ changeModal }: { changeModal: ChangeModalCallback }) => {
 
-
-
-const Login = ({ onLogin, changeModal }: { onLogin: LoginCallback, changeModal: ChangeModalCallback }) => {
+  const { setCurrentUser } = useAuthStore();
+  const [message, setMessage] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const { mutate, status } = useLoginUser();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -36,7 +41,19 @@ const Login = ({ onLogin, changeModal }: { onLogin: LoginCallback, changeModal: 
 
   const onSubmit = (data: FormData) => {
     console.log("Form submitted:", data)
-    onLogin(data)
+    mutate(data, {
+      onSuccess: (res) => {
+        setCurrentUser(res.data.user);
+        form.reset();
+        setMessage({ type: "success", message: "Your account has been created successfully." });
+        setTimeout(() => {
+          setMessage(null);
+        }, 2000);
+      },
+      onError: (error) => {
+        setMessage({ type: "error", message: error.message });
+      }
+    });
   }
 
   return (
@@ -90,6 +107,9 @@ const Login = ({ onLogin, changeModal }: { onLogin: LoginCallback, changeModal: 
                 </div>
               </div>
             </div>
+            <div className={`flex w-full text-center ${message ? (message.type === "error" ? "text-red-500" : "text-green-500") : ""} `}>
+              <span>{message && message.message}</span>
+            </div>
             <div className="flex justify-center mb-2">
               <Button
                 type="submit"
@@ -98,6 +118,7 @@ const Login = ({ onLogin, changeModal }: { onLogin: LoginCallback, changeModal: 
                 className="rounded-xl px-6 py-0! font-semibold text-white w-full"
               >
                 Login
+                <Spinner className={`size-5 ml-2 ${status !== "pending" ? "hidden" : ""}`} />
               </Button>
             </div>
             <div className="text-xs text-center font-medium flex flex-col justify-center items-center gap-2 ">

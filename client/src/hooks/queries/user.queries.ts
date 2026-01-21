@@ -17,7 +17,7 @@ export const useGetAllUsers = () => {
 
 export const useGetUser = (userId: string) => {
   return useQuery({
-    queryKey: ["user"],
+    queryKey: ["users", userId],
     queryFn: () => getUser(userId),
     retry: (count, error: ApiError) => {
       if (error.status === 401) return false;

@@ -1,10 +1,16 @@
+import type { User } from "./user.type";
+
 export type Comment = {
-  user: string
+  _id?: string
+  user: User
   description: string
   pin: string
+  createdAt?: string
 }
 
-export type CreateCommentPayload = Omit<Comment, "_id">;
+export type CreateCommentPayload = Omit<Comment, "_id" | "createdAt" | "user"> & {
+  user: string
+};
 
 export type UpdateCommentPayload = Partial<
   Pick<Comment, "pin" | "description">

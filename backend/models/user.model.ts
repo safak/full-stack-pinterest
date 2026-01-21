@@ -14,6 +14,9 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
+  dob: {
+    type: Date,
+  },
   img: {
     type: String,
   },

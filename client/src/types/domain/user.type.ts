@@ -7,8 +7,6 @@ export type User = {
   password?: string;
 };
 
-export type CreateUserPayload = Omit<User, "_id">;
-
 export type UpdateUserPayload = Partial<
   Pick<User, "displayName" | "img" | "username" | "password">
 >;

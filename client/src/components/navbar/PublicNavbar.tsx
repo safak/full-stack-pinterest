@@ -1,9 +1,11 @@
 
 
+import { useNavigate } from "react-router";
 import AppLogo from "../AppLogo";
 import { Button } from "../ui/button";
 
 function PublicNavbar() {
+  const navigate = useNavigate();
   return (
     <nav className={`w-full flex justify-between h-max items-center sticky top-0 z-10 bg-background`}>
       <div className="flex w-max gap-3 pr-4 items-center justify-between">
@@ -19,8 +21,8 @@ function PublicNavbar() {
           <a href="#" className="hover:underline" target="_blank">Create</a>
           <a href="#" className="hover:underline" target="_blank">News</a>
         </div>
-        <Button variant="destructive" size="xl">Log in</Button>
-        <Button variant="secondary" className="bg-button-foreground" size="xl">Sign up</Button>
+        <Button variant="destructive" size="xl" onClick={() => navigate("/auth")}>Log in</Button>
+        <Button variant="secondary" className="bg-button-foreground" size="xl" onClick={() => navigate("/auth?type=signup")}>Sign up</Button>
       </div>
     </nav>
   );

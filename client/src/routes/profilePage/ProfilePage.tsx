@@ -1,6 +1,6 @@
 import Gallery from "@/components/gallery/Gallery"
 import ProfileHeader from "@/components/profileHeader/ProfileHeader"
-import SavedCollection from "@/components/savedCollection/SavedCollection"
+import SavedBoard from "@/components/savedBoard/SavedBoard"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { useGetAllPins } from "@/hooks/queries/pin.queries"
@@ -37,8 +37,8 @@ const ProfilePage = () => {
     <div className="flex flex-col">
       <ProfileHeader
         avatarUrl={userData.data?.img || ""}
-        name={userData.data?.displayName || "N/A"}
-        username={userData.data?.username || "N/A"}
+        name={userData.data?.displayName || ""}
+        username={userData.data?.username || ""}
         followers="2.6k"
         following="10"
         monthlyViews="2.1m"
@@ -62,7 +62,7 @@ const ProfilePage = () => {
           </div>
           {selectedCollection === "created" ?
             (<Gallery data={allPins} loadMore={fetchNextPage} hasNextPage={hasNextPage} />)
-            : (<SavedCollection />)}
+            : (<SavedBoard userId={id || ""} />)}
         </div>
       )}
     </div>

@@ -1,7 +1,6 @@
 import User from "../models/user.model.ts"
 import bcrypt from 'bcryptjs'
 
-
 export const getUser = async (req: any, res: any) => {
   const id = req.params?.id || req.query?.id
   if (!id) return res.status(400).json({ message: "Missing pin id." })
@@ -16,18 +15,6 @@ export const getUser = async (req: any, res: any) => {
 export const getUsers = async (req: any, res: any) => {
   const user = await User.find()
   return res.status(200).json({ message: "Users fetched successfully.", data: user })
-}
-
-export const createUser = async (req: any, res: any) => {
-  const user = req.body
-  const hashedPassword = await bcrypt.hash(user.password, 10)
-
-  const newUser = await User.create({
-    ...user,
-    hashedPassword
-  })
-
-  return res.status(201).json({ message: "Users created successfully." })
 }
 
 export const updateUser = async (req: any, res: any) => {

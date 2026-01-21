@@ -5,29 +5,20 @@ import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 
 import Image from "../image/Image";
-import "./CollectionItem.css";
+import "./BoardItem.css";
+import type { Pin } from "@/types";
 
-
-export type CollectionItemProps = {
-  id: number | string;
-  media: string;
-  width: number;
-  height: number;
-}
-
-const CollectionItem = ({ item, className, style }: { item: CollectionItemProps; className?: string; style?: CSSProperties }) => {
+const BoardItem = ({ item, className, style }: { item: Pin; className?: string; style?: CSSProperties }) => {
   const navigate = useNavigate();
 
   return (
     <div>
-
-
       <Card style={style} className={`block hover:flex h-max border-0 rounded-lg p-0 relative shadow-none collection-item ${className ?? ""}`} >
 
         <Image item={item} />
         {/* Overlay */}
         <div
-          onClick={() => navigate(`/pin/${item.id}`)}
+          onClick={() => navigate(`/pin/${item._id}`)}
           className={`absolute bg-black/30 rounded-lg top-0 left-0 flex-col justify-between w-full h-full p-4 overlay`} >
           <div className="flex-1 w-full flex items-start justify-between gap-2 ">
             <Button
@@ -66,4 +57,4 @@ const CollectionItem = ({ item, className, style }: { item: CollectionItemProps;
   )
 }
 
-export default CollectionItem
+export default BoardItem

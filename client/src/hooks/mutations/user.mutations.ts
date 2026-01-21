@@ -1,34 +1,17 @@
+import { deleteUser, updateUser } from "@/api/endpoints/user.api";
+import type { ApiError, UpdateUserPayload } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createUser, updateUser, deleteUser } from "@/api/endpoints/user.api";
-import type { ApiError } from "@/types";
 
-
-export const useCreateUser = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: createUser,
-
-    onSuccess: (createUser) => {
-      // 🔥 Update cache immediately (no refetch)
-      queryClient.setQueryData(["user"], createUser);
-    },
-
-    onError: (error: ApiError) => {
-      console.error(error.message);
-    },
-  });
-};
 
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: updateUser,
+    mutationFn: ({ userId, payload }: { userId: string, payload: UpdateUserPayload }) => updateUser({ userId, payload }),
 
-    onSuccess: (updatedUser) => {
+    onSuccess: async () => {
       // 🔥 Update cache immediately (no refetch)
-      queryClient.setQueryData(["user"], updatedUser);
+      await queryClient.invalidateQueries({ queryKey: ['users'] })
     },
 
     onError: (error: ApiError) => {
@@ -44,7 +27,7 @@ export const useDeleteUser = () => {
     mutationFn: deleteUser,
 
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ["user"] });
+      queryClient.removeQueries({ queryKey: ["users"] });
     },
   });
 };

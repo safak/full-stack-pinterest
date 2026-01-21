@@ -1,14 +1,28 @@
-import { useMutation } from "@tanstack/react-query";
-import { login, signup } from "@/api/endpoints/auth.api";
-import { setAccessToken } from "@/lib/auth-store";
-import type { ApiError } from "@/types";
+import { login, logout, registerUser } from "@/api/endpoints/auth.api";
+import type { ApiError, SignupPayload } from "@/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export const useLogin = () => {
+
+export const useLoginUser = () => {
   return useMutation({
     mutationFn: login,
 
-    onSuccess: (data: any) => {
-      setAccessToken(data.accessToken);
+    onSuccess: () => { },
+
+    onError: (error: ApiError) => {
+      console.error(error.message);
+    },
+  });
+};
+
+export const useRegisterUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: SignupPayload) => registerUser(payload),
+
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['users'] })
     },
 
     onError: (error: ApiError) => {
@@ -17,13 +31,11 @@ export const useLogin = () => {
   });
 };
 
-export const useSignup = () => {
+export const useLogoutUser = () => {
   return useMutation({
-    mutationFn: signup,
+    mutationFn: logout,
 
-    onSuccess: (data: any) => {
-      setAccessToken(data.accessToken);
-    },
+    onSuccess: () => { },
 
     onError: (error: ApiError) => {
       console.error(error.message);

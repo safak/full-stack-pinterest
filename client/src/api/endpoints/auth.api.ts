@@ -1,8 +1,11 @@
-import type { AuthResponse, LoginPayload, SignupPayload } from "@/types";
+import type { AuthResponse, LoginPayload, SignupPayload, User } from "@/types";
 import api from "../axios";
 
 export const login = (payload: LoginPayload) =>
   api.post<AuthResponse>("/auth/login", payload);
 
-export const signup = (payload: SignupPayload) =>
-  api.post<AuthResponse>("/auth/signup", payload);
+export const registerUser = (payload: SignupPayload) =>
+  api.post<User>("/auth/register", payload);
+
+export const logout = () =>
+  api.post<any>("/auth/logout");

@@ -9,9 +9,8 @@ export const useCreatePin = () => {
   return useMutation({
     mutationFn: createPin,
 
-    onSuccess: (createPin) => {
-      // 🔥 Update cache immediately (no refetch)
-      queryClient.setQueryData(["pin"], createPin);
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['pins'] })
     },
 
     onError: (error: ApiError) => {
@@ -44,7 +43,7 @@ export const useDeletePin = () => {
     mutationFn: deletePin,
 
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ["pin"] });
+      queryClient.removeQueries({ queryKey: ["pins"] });
     },
   });
 };

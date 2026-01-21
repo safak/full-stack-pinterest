@@ -1,11 +1,15 @@
 import { Outlet } from 'react-router';
 
+import PublicNavbar from '@/components/navbar/PublicNavbar';
 import AppSidebar from '@/components/sidebar/Sidebar';
 import Topbar from '@/components/topBar/Topbar';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import useAuthStore from '@/lib/auth-store';
 
 
 function MainLayout() {
+  const { currentUser } = useAuthStore();
+
   return (
     <div className='w-full h-screen flex'>
       <div className='flex'>
@@ -14,7 +18,7 @@ function MainLayout() {
         </SidebarProvider>
       </div>
       <div className='flex-1'>
-        <Topbar />
+        {currentUser ? <Topbar /> : <PublicNavbar />}
         <Outlet />
       </div>
     </div>

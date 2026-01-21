@@ -1,6 +1,7 @@
 import express from "express"
 import cors from "cors"
 import userRouter from "./routes/user.route.ts"
+import authRouter from "./routes/auth.route.ts"
 import pinRouter from "./routes/pin.route.ts"
 import commentRouter from "./routes/comment.route.ts"
 import boardRouter from "./routes/board.route.ts"
@@ -39,6 +40,7 @@ app.use(
 
 
 app.use("/users", userRouter)
+app.use("/auth", authRouter)
 app.use("/pins", pinRouter)
 app.use("/comments", commentRouter)
 app.use("/boards", boardRouter)
