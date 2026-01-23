@@ -14,8 +14,8 @@ function PublicNavbar() {
           Explore
         </Button>
       </div>
-      <div className="flex gap-4 items-center text-sm font-bold capitalize">
-        <div className="flex text-lg font-medium gap-6 p-4 text-[#2b48d4]">
+      <div className="flex gap-4 items-center text-sm font-bold capitalize mt-3 mr-3">
+        <div className="hidden md:flex text-lg font-medium gap-6 p-4 text-[#2b48d4]">
           <a href="#" className="hover:underline" target="_blank">About</a>
           <a href="#" className="hover:underline" target="_blank">Businesses</a>
           <a href="#" className="hover:underline" target="_blank">Create</a>

@@ -1,5 +1,5 @@
 import { createPin, deletePin, updatePin } from "@/api/endpoints/pin.api";
-import type { ApiError } from "@/types";
+import type { ApiError, CreatePinPayload, UpdatePinPayload } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 
@@ -7,7 +7,7 @@ export const useCreatePin = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createPin,
+    mutationFn: (payload: CreatePinPayload) => createPin(payload),
 
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['pins'] })
@@ -19,22 +19,19 @@ export const useCreatePin = () => {
   });
 };
 
-// export const useUpdatePin = () => {
-//   const queryClient = useQueryClient();
+export const useUpdatePin = () => {
+  const queryClient = useQueryClient();
 
-//   return useMutation({
-//     mutationFn: updatePin,
+  return useMutation({
+    mutationFn: ({ pinId, payload }: { pinId: string, payload: UpdatePinPayload }) => updatePin({ pinId, payload }),
 
-//     onSuccess: (updatedPin) => {
-//       // 🔥 Update cache immediately (no refetch)
-//       queryClient.setQueryData(["user"], updatedPin);
-//     },
+    onSuccess: async () => await queryClient.invalidateQueries({ queryKey: ['pins'] }),
 
-//     onError: (error: ApiError) => {
-//       console.error(error.message);
-//     },
-//   });
-// };
+    onError: (error: ApiError) => {
+      console.error(error.message);
+    },
+  });
+};
 
 export const useDeletePin = () => {
   const queryClient = useQueryClient();

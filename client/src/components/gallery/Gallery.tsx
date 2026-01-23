@@ -169,7 +169,7 @@ const Gallery = ({ data, hasNextPage, loadMore }: any) => {
       }
       endMessage={
         <p style={{ textAlign: 'center' }}>
-          <b>That's all</b>
+          <b>{data.length > 0 ? "That's all" : "Nothing to show"}</b>
         </p>
       }
     >

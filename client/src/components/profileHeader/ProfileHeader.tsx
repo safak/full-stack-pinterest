@@ -1,15 +1,19 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Ellipsis, Upload } from "lucide-react";
+import FollowButton from "../followButton/FollowButton";
+import useAuthStore from "@/lib/authStore";
+import { useNavigate } from "react-router";
 
 export type ProfileHeaderProps = {
   avatarUrl?: string;
   name: string;
   username: string;
-  followers: string;
-  following: string;
+  followers: number;
+  following: number;
   monthlyViews: string;
   bio?: string;
+  isFollowing?: boolean;
 };
 
 export default function ProfileHeader({
@@ -20,7 +24,10 @@ export default function ProfileHeader({
   following,
   monthlyViews,
   bio,
+  isFollowing,
 }: ProfileHeaderProps) {
+  const { currentUser } = useAuthStore()
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col items-center bg-white p-6 shadow-[rgba(0,0,15,0.5)_0px_8px_6px_0px] rounded-2xl max-w-md mx-auto mt-4">
       {/* Avatar + Name */}
@@ -45,7 +52,7 @@ export default function ProfileHeader({
         <span>·</span>
         <span>{following} following</span>
         <span>·</span>
-        <span>{monthlyViews} monthly views</span>
+        {monthlyViews && <span>{monthlyViews} monthly views</span>}
       </div>
 
       {/* Bio */}
@@ -56,23 +63,22 @@ export default function ProfileHeader({
       )}
 
       {/* Buttons */}
-      <div className="flex items-center justify-center gap-2 mt-4">
+      {currentUser?.username !== username && <div className="flex items-center justify-center gap-2 mt-4">
         <Button
           variant="ghost"
           className="rounded-lg"
+          onClick={() => !currentUser?._id && navigate("/auth")}
         >
           <Upload className="w-6! h-6!" size={9} />
         </Button>
-        <Button variant="secondary" className="bg-gray-200" size="xl">
+        <Button variant="secondary" className="bg-gray-200" size="xl" onClick={() => !currentUser?._id && navigate("/auth")}>
           Message
         </Button>
-        <Button variant="destructive" size="xl">
-          Follow
-        </Button>
+        <FollowButton isFollowing={isFollowing || false} username={username} />
         <Button variant="ghost" size="xl" className="px-2!">
           <Ellipsis className="w-7! h-7!" />
         </Button>
-      </div>
+      </div>}
     </div>
   );
 }

@@ -5,6 +5,7 @@ export type Comment = {
   user: User
   description: string
   pin: string
+  likes?: string[]
   createdAt?: string
 }
 
@@ -13,5 +14,5 @@ export type CreateCommentPayload = Omit<Comment, "_id" | "createdAt" | "user"> &
 };
 
 export type UpdateCommentPayload = Partial<
-  Pick<Comment, "pin" | "description">
+  Pick<Comment, "pin" | "description" | "likes">
 >;

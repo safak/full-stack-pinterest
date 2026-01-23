@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from 'react-router';
 import PublicNavbar from '@/components/navbar/PublicNavbar';
-import useAuthStore from '@/lib/auth-store';
+import useAuthStore from '@/lib/authStore';
 import { useEffect } from 'react';
 
 

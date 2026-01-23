@@ -11,6 +11,11 @@ const boardSchema = new Schema({
     type: String,
     required: true
   },
+  pin: {
+    type: Schema.Types.ObjectId,
+    ref: "Pin",
+    required: true
+  }
 },
   {
     timestamps: true

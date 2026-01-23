@@ -4,7 +4,7 @@ import PublicNavbar from '@/components/navbar/PublicNavbar';
 import AppSidebar from '@/components/sidebar/Sidebar';
 import Topbar from '@/components/topBar/Topbar';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import useAuthStore from '@/lib/auth-store';
+import useAuthStore from '@/lib/authStore';
 
 
 function MainLayout() {

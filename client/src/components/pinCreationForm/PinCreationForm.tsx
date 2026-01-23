@@ -10,11 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ChevronDown, Upload, X } from "lucide-react"
-import { useCallback, useState } from "react"
+import { ChevronDown, Pencil, Upload, X } from "lucide-react"
+import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import useEditorStore from "@/lib/editorStore"
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20MB for images
 const MAX_VIDEO_SIZE = 200 * 1024 * 1024 // 200MB for videos
@@ -41,13 +42,15 @@ interface UploadedFile {
   preview: string
 }
 
-export function PinCreationForm() {
+export function PinCreationForm({ isEditing, setIsEditing }: { isEditing: boolean; setIsEditing: React.Dispatch<React.SetStateAction<boolean>> }) {
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
   const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState(false)
   const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState("")
+  const { setSelectedImage } = useEditorStore();
 
+  console.log("isEditing", isEditing);
 
 
   const form = useForm<FormData>({
@@ -140,6 +143,13 @@ export function PinCreationForm() {
     { value: "home", label: "Home Decor" },
   ]
 
+  useEffect(() => {
+    console.log("uploadedFile", uploadedFile);
+    if (uploadedFile) {
+      setSelectedImage(uploadedFile.preview);
+    }
+  }, [uploadedFile, setSelectedImage])
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="mx-auto max-w-5xl">
@@ -168,16 +178,18 @@ export function PinCreationForm() {
                         className="h-full w-full object-cover"
                       />
                     )}
-                    <button
-                      type="button"
+                    <Button
                       onClick={(e) => {
                         e.stopPropagation()
-                        removeFile()
+                        // removeFile()
+                        setIsEditing(true)
                       }}
-                      className="absolute right-2 top-2 rounded-full bg-foreground/80 p-1.5 text-background transition-colors hover:bg-foreground"
+                      className="absolute right-2 top-2 rounded-full! bg-white/80 transition-colors hover:bg-white"
+                      variant="default"
+                      size={"icon-lg"}
                     >
-                      <X className="h-4 w-4" />
-                    </button>
+                      <Pencil className="text-black" />
+                    </Button>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-3 px-6 text-center">

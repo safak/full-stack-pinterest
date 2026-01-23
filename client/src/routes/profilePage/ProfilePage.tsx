@@ -39,10 +39,11 @@ const ProfilePage = () => {
         avatarUrl={userData.data?.img || ""}
         name={userData.data?.displayName || ""}
         username={userData.data?.username || ""}
-        followers="2.6k"
-        following="10"
-        monthlyViews="2.1m"
-        bio="✧ dm for photo credit or removal ✧"
+        followers={userData.data?.followers || 0}
+        following={userData.data?.following || 0}
+        isFollowing={userData.data?.isFollowing || false}
+        monthlyViews=""
+        bio=""
       />
       {status === "pending" ? (
         <div className="w-full flex mt-6 justify-center">

@@ -50,3 +50,66 @@ export const createPin = async (req: any, res: any) => {
 
   return res.status(201).json({ message: "Pin created successfully." })
 }
+
+// media: {
+//     type: String,
+//     required: true
+//   },
+//   width: {
+//     type: Number,
+//     required: true
+//   },
+//   height: {
+//     type: Number,
+//     required: true
+//   },
+//   title: {
+//     type: String,
+//     required: true
+//   },
+//   description: {
+//     type: String,
+//     required: true
+//   },
+//   link: {
+//     type: String,
+//   },
+//   board: {
+//     type: Schema.Types.ObjectId,
+//     ref: "Board",
+//   },
+//   tags: {
+//     type: [String]
+//   },
+//   likes: [{
+//     type: Schema.Types.ObjectId,
+//     ref: "User"
+//   }]
+
+export const updatePin = async (req: any, res: any) => {
+  const { pinId } = req.params
+  const { description, likes, media, width, height, title, link, board, tags } = req.body
+
+  const existingPin = await Pin.findById(pinId)
+  if (!existingPin) {
+    return res.status(404).json({ message: "Pin not found" })
+  }
+
+  const updatedPin = await Pin.findByIdAndUpdate(
+    pinId,
+    {
+      description: description ?? existingPin.description,
+      media: media ?? existingPin.media,
+      width: width ?? existingPin.width,
+      height: height ?? existingPin.height,
+      title: title ?? existingPin.title,
+      link: link ?? existingPin.link,
+      board: board ?? existingPin.board,
+      tags: tags ?? existingPin.tags,
+      likes: likes ? likes : existingPin.likes
+    },
+    { new: true }
+  )
+
+  return res.status(200).json({ message: "Pin updated successfully", data: updatedPin })
+}

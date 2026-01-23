@@ -1,8 +1,9 @@
 import express from "express";
-import { getUserBoards } from '../controllers/board.controller.ts'
+import { createBoard, getUserBoards } from '../controllers/board.controller.ts'
 
 const router = express.Router()
 
-router.get("/:userId", getUserBoards)
+router.get("/user/:userId", getUserBoards)
+router.post("/", createBoard)
 
 export default router

@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Button } from "../ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Input } from "../ui/input"
-import useAuthStore from "@/lib/auth-store"
+import useAuthStore from "@/lib/authStore"
 
 const Topbar = () => {
   const navigate = useNavigate()
@@ -25,7 +25,6 @@ const Topbar = () => {
     try {
       await mutateAsync();
       removeCurrentUser();
-      navigate("/auth");
     } catch (err: any) {
       setError(err);
       setTimeout(() => setError(null), 3000);

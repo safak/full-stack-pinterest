@@ -36,8 +36,11 @@ const pinSchema = new Schema({
   },
   tags: {
     type: [String]
-  }
-
+  },
+  likes: [{
+    type: Schema.Types.ObjectId,
+    ref: "User"
+  }]
 
 },
   {

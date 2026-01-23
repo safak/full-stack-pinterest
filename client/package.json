@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@giphy/js-fetch-api": "^5.7.0",
+    "@giphy/react-components": "^10.1.1",
     "@hookform/resolvers": "^5.2.2",
     "@imagekit/react": "^5.0.1",
     "@radix-ui/react-avatar": "^1.1.11",
@@ -24,6 +26,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-query": "^5.90.18",
+    "@uiw/react-color-compact": "^2.9.2",
     "axios": "^1.13.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

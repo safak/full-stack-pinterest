@@ -6,7 +6,9 @@
 		"dev": "node --watch --env-file=.env  index.ts"
 	},
 	"dependencies": {
+		"@types/cookie-parser": "^1.4.10",
 		"bcryptjs": "^3.0.3",
+		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
 		"express": "^5.2.1",
 		"jsonwebtoken": "^9.0.3",

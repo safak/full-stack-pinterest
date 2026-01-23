@@ -3,7 +3,7 @@ import api from "../axios";
 
 export const getAllBoards = () => api.get<Board[]>("/boards");
 
-export const getUserBoard = (userId: string) => api.get<Board[]>(`/boards/${userId}`);
+export const getUserBoard = (userId: string) => api.get<Board[]>(`/boards/user/${userId}`);
 
 export const getBoardById = (boardId: string) => api.get<Board>(`/boards/${boardId}`);
 

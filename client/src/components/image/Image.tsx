@@ -8,22 +8,23 @@ type ImageItem = {
   alt?: string;
   w?: number
   h?: number
+  className?: string;
 }
 
 type Props = {
   item?: ImageItem;
 }
 
-const Image = ({ item = { media: '', loading: "lazy", alt: "N/A", w: 372 } }: Props) => {
+const Image = ({ item = { media: '', loading: "lazy", alt: "N/A", w: 372, className: "" } }: Props) => {
   return (
     <IkImage
-      className="w-full rounded-lg object-cover!"
+      className={`w-full rounded-lg object-cover! ${item.className}`}
       urlEndpoint={ikUrlEndpoint}
       src={item.media}
       transformation={[
         { width: item.w },
       ]}
-      loading={item.loading}
+      loading={"lazy"}
       alt={item.alt}
     />
   )

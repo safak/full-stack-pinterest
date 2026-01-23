@@ -26,7 +26,7 @@ const items = [
   },
   {
     title: "explore",
-    url: "/explore",
+    url: "#",
     icon: Compass
   },
   {
@@ -37,20 +37,20 @@ const items = [
   },
   {
     title: "Add",
-    url: "#",
+    url: "/create",
     icon: SquarePlusIcon
   },
   {
     title: "Notifications",
     url: "#",
     icon: Bell,
-    msgs: 3
+    count: 3
   },
   {
     title: "Messages",
     url: "#",
     icon: MessageCircleMore,
-    msgs: 7
+    count: 7
   },
 ]
 
@@ -71,16 +71,19 @@ function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="flex flex-col gap-7" >
               {items.map((item) => (
-                <SidebarMenuItem key={item.title} >
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon className="w-6! h-6!" />
-                    </a>
+                <SidebarMenuItem key={item.title}  >
+                  <SidebarMenuButton className="relative" asChild>
+                    <>
+                      <a href={item.url} className="flex justify-center">
+                        <item.icon className="w-6! h-6!" />
+                      </a>
+                      <span className="absolute left-14 bottom-8 ">
+                        {item.count && (
+                          <SidebarMenuBadge className="bg-red-600 rounded-full text-white text-xs font-semibold">{item.count}</SidebarMenuBadge>
+                        )}
+                      </span>
+                    </>
                   </SidebarMenuButton>
-                  {item.msgs && (
-                    <SidebarMenuBadge>{item.msgs}</SidebarMenuBadge>
-                  )
-                  }
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -93,7 +96,7 @@ function AppSidebar() {
           <SidebarMenuItem>
             <DropdownMenu >
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton >
+                <SidebarMenuButton className="flex justify-center">
                   <Settings className="w-6! h-6! cursor-pointer" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

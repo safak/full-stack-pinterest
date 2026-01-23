@@ -6,12 +6,10 @@ import pinRouter from "./routes/pin.route.ts"
 import commentRouter from "./routes/comment.route.ts"
 import boardRouter from "./routes/board.route.ts"
 import connectDB from "./db/connectDB.ts"
+import cookieParser from "cookie-parser"
 
 const PORT = process.env.PORT || 3000
 const CLIENT_URL = process.env.CLIENT_URL!;
-
-console.log(CLIENT_URL);
-
 
 const app = express()
 
@@ -19,18 +17,17 @@ app.use(express.json())
 
 app.use(
   cors({
-    // origin: (origin, callback) => {
-    //   // Allow server-to-server or Postman
-    //   if (!origin) return callback(null, true);
-    //   console.log(origin, CLIENT_URL);
+    origin: (origin, callback) => {
+      // Allow server-to-server or Postman
+      if (!origin) return callback(null, true);
+ 
+      if (origin === CLIENT_URL) {
+        return callback(null, true);
+      }
 
-    //   if (origin === CLIENT_URL) {
-    //     return callback(null, true);
-    //   }
-
-    //   return callback(new Error("Not allowed by CORS"));
-    // },
-    origin: true,
+      return callback(new Error("Not allowed by CORS"));
+    },
+    // origin: true,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     // allow common auth headers and the custom X-Request-ID used by the client
@@ -38,7 +35,7 @@ app.use(
   })
 );
 
-
+app.use(cookieParser())
 app.use("/users", userRouter)
 app.use("/auth", authRouter)
 app.use("/pins", pinRouter)

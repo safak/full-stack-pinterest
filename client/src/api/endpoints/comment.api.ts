@@ -10,9 +10,10 @@ export const getPinComments = (pindId: string) => api.get<Comment[]>(`/comments/
 
 export const createComment = (payload: CreateCommentPayload) => api.post<Comment>("/comments", payload);
 
-export const updateComment = (
+export const updateComment = ({ commentId, payload }: {
   commentId: string,
   payload: UpdateCommentPayload
+}
 ) => api.patch<Comment>(`/comments/${commentId}`, payload);
 
 export const deleteComment = (commentId: string) => api.delete<void>(`/comments/${commentId}`);

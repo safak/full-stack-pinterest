@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { useLoginUser } from "@/hooks/mutations/auth.mutations"
-import useAuthStore from "@/lib/auth-store"
+import useAuthStore from "@/lib/authStore"
 import type { ChangeModalCallback } from "@/routes/auth/AuthPage"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"

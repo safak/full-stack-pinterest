@@ -1,5 +1,5 @@
 
-export type User = {
+export type PostUser = {
   _id: string
   username: string;
   displayName: string;
@@ -18,5 +18,6 @@ export type PostType = {
   link?: string;
   board?: string
   tags?: string[]
-  user: User
+  user: PostUser
+  likes?: string[] 
 };

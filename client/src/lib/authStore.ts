@@ -1,12 +1,12 @@
-import type { User } from "@/types";
+import type { PostUser } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 type AuthState = {
-  currentUser: User | null;
-  setCurrentUser: (user: User) => void;
+  currentUser: PostUser | null;
+  setCurrentUser: (user: PostUser) => void;
   removeCurrentUser: () => void;
-  updateCurrentUser: (newUser: User) => void;
+  updateCurrentUser: (newUser: PostUser) => void;
 };
 
 const useAuthStore = create<AuthState>()(
