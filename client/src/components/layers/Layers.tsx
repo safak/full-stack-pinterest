@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 
 const Layers = () => {
   const navigate = useNavigate();
-  const { selectedImage, selectedLayer, allLayers, setSelectedLayer: setLayer, addLayer, removeLayer, setSelectedLayer } = useEditorStore();
+  const { selectedImage, selectedLayer, allLayers, setSelectedLayer: setLayer, addLayer, removeLayer } = useEditorStore();
   const { TEXT_IMG } = ASSETS
 
   useEffect(() => {
@@ -47,10 +47,16 @@ const Layers = () => {
               </div>
 
               {layer.type === "text" &&
-                <Button variant={"ghost"} size={"icon"} onClick={() => {
-                  setSelectedLayer({ id: 2, name: "Canvas", type: "canvas" });
-                  return removeLayer(layer.id)
-                }}>
+                <Button
+                  variant={"ghost"}
+                  size={"icon"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeLayer(layer.id)
+                    setLayer({ id: 2, name: "Canvas", type: "canvas" });
+                    return
+                  }}
+                >
                   <Trash2 />
                 </Button>
               }
@@ -61,7 +67,11 @@ const Layers = () => {
         </div>
       </div>
 
-      <Button size="xl" className="mt-4 w-full bg-black/10 hover:bg-black/20 text-black text-lg font-semibold" onClick={() => addLayer()} disabled={allLayers.length >= 10}>
+      <Button
+        size="xl"
+        className="mt-4 w-full bg-black/10 hover:bg-black/20 text-black text-lg font-semibold"
+        onClick={() => addLayer()} disabled={allLayers.length >= 10
+        }>
         Add text Layer
       </Button>
 

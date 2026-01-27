@@ -1,7 +1,3 @@
-"use client"
-
-import type React from "react"
-
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -10,22 +6,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ChevronDown, Pencil, Upload, X } from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
-import { useDropzone } from "react-dropzone"
+import { ChevronDown, X } from "lucide-react"
+import { useEffect, useState } from "react"
+
+import useEditorStore from "@/lib/editorStore"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import useEditorStore from "@/lib/editorStore"
+import ImagePicker from "../imagePicker/ImagePicker"
 
-const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20MB for images
-const MAX_VIDEO_SIZE = 200 * 1024 * 1024 // 200MB for videos
-const ACCEPTED_FILE_TYPES = {
-  "image/jpeg": [".jpg", ".jpeg"],
-  "image/png": [".png"],
-  "image/gif": [".gif"],
-  "image/webp": [".webp"],
-  "video/mp4": [".mp4"],
-}
+
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Title must be less than 100 characters"),
@@ -37,7 +26,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>
 
-interface UploadedFile {
+export interface UploadedFile {
   file: File
   preview: string
 }
@@ -50,9 +39,6 @@ export function PinCreationForm({ isEditing, setIsEditing }: { isEditing: boolea
   const [tagInput, setTagInput] = useState("")
   const { setSelectedImage } = useEditorStore();
 
-  console.log("isEditing", isEditing);
-
-
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,52 +49,6 @@ export function PinCreationForm({ isEditing, setIsEditing }: { isEditing: boolea
       taggedTopics: [],
     },
   })
-
-
-
-  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
-    setFileError(null)
-
-    if (rejectedFiles.length > 0) {
-      const error = rejectedFiles[0].errors[0]
-      if (error.code === "file-too-large") {
-        setFileError("File is too large. Max size is 20MB for images and 200MB for videos.")
-      } else if (error.code === "file-invalid-type") {
-        setFileError("Invalid file type. Please upload a .jpg, .png, .gif, .webp, or .mp4 file.")
-      }
-      return
-    }
-
-    if (acceptedFiles.length > 0) {
-      const file = acceptedFiles[0]
-      const isVideo = file.type.startsWith("video/")
-      const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_FILE_SIZE
-
-      if (file.size > maxSize) {
-        setFileError(`File is too large. Max size is ${isVideo ? "200MB" : "20MB"}.`)
-        return
-      }
-
-      setUploadedFile({
-        file,
-        preview: URL.createObjectURL(file),
-      })
-    }
-  }, [])
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: ACCEPTED_FILE_TYPES,
-    maxFiles: 1,
-    multiple: false,
-  })
-
-  const removeFile = () => {
-    if (uploadedFile) {
-      URL.revokeObjectURL(uploadedFile.preview)
-      setUploadedFile(null)
-    }
-  }
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && tagInput.trim()) {
@@ -144,8 +84,9 @@ export function PinCreationForm({ isEditing, setIsEditing }: { isEditing: boolea
   ]
 
   useEffect(() => {
-    console.log("uploadedFile", uploadedFile);
     if (uploadedFile) {
+      console.log("uploadedFile", uploadedFile);
+
       setSelectedImage(uploadedFile.preview);
     }
   }, [uploadedFile, setSelectedImage])
@@ -156,55 +97,13 @@ export function PinCreationForm({ isEditing, setIsEditing }: { isEditing: boolea
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6 lg:flex-row lg:gap-8">
             {/* Left side - File Upload */}
-            <div className="flex w-full flex-col gap-4 lg:w-[400px]">
-              <div
-                {...getRootProps()}
-                className={cn(
-                  "relative flex min-h-[400px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed transition-colors",
-                  isDragActive ? "border-primary bg-primary/5" : "border-transparent bg-[#e9e9e9] hover:bg-[#ddd]",
-                  uploadedFile && "border-none p-0",
-                )}
-              >
-                <input {...getInputProps()} />
-
-                {uploadedFile ? (
-                  <div className="relative h-full w-full overflow-hidden rounded-2xl">
-                    {uploadedFile.file.type.startsWith("video/") ? (
-                      <video src={uploadedFile.preview} className="h-full w-full object-cover" controls />
-                    ) : (
-                      <img
-                        src={uploadedFile.preview || "/placeholder.svg"}
-                        alt="Preview"
-                        className="h-full w-full object-cover"
-                      />
-                    )}
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        // removeFile()
-                        setIsEditing(true)
-                      }}
-                      className="absolute right-2 top-2 rounded-full! bg-white/80 transition-colors hover:bg-white"
-                      variant="default"
-                      size={"icon-lg"}
-                    >
-                      <Pencil className="text-black" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center gap-3 px-6 text-center">
-                    <div className="rounded-full border-2 border-foreground p-2">
-                      <Upload className="h-5 w-5" />
-                    </div>
-                    <p className="text-sm font-medium">
-                      Choose a <span className="underline">file</span> or drag and drop it here
-                    </p>
-                    <p className="mt-16 text-xs text-muted-foreground">
-                      We recommend using high-quality .jpg files less than 20 MB or .mp4 files less than 200 MB.
-                    </p>
-                  </div>
-                )}
-              </div>
+            <div className="flex w-full flex-col gap-4 lg:w-100">
+              <ImagePicker
+                uploadedFile={uploadedFile}
+                setUploadedFile={setUploadedFile}
+                setFileError={setFileError}
+                setIsEditing={setIsEditing}
+              />
 
               {fileError && <p className="text-sm text-destructive">{fileError}</p>}
 
@@ -248,7 +147,7 @@ export function PinCreationForm({ isEditing, setIsEditing }: { isEditing: boolea
                     <FormControl>
                       <Textarea
                         placeholder="Add a detailed description"
-                        className="min-h-[100px] resize-none rounded-xl border-none bg-[#e9e9e9] placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
+                        className="min-h-25 resize-none rounded-xl border-none bg-[#e9e9e9] placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
                         {...field}
                       />
                     </FormControl>
@@ -320,7 +219,7 @@ export function PinCreationForm({ isEditing, setIsEditing }: { isEditing: boolea
                       onChange={(e) => setTagInput(e.target.value)}
                       onKeyDown={handleAddTag}
                       placeholder="Search for a tag"
-                      className="h-auto min-w-[120px] flex-1 border-none bg-transparent p-0 placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
+                      className="h-auto min-w-30 flex-1 border-none bg-transparent p-0 placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </div>
                 </div>
