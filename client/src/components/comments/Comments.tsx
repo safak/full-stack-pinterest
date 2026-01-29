@@ -90,6 +90,13 @@ export default function Comments({ post }: { post: PostType }) {
             </div>
           </div>
         </Link>
+        {post.description && (
+          <div className="flex-1 flex justify-start w-full mb-4">
+            <p className="text-sm text-black/80 font-semibold mr-1 capitalize">
+              {post.description}
+            </p>
+          </div>
+        )}
         <Separator />
         <div className={`w-full max-w-xl rounded-2xl bg-white p-4`}>
           {/* Header */}

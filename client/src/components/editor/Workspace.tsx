@@ -2,6 +2,7 @@ import useEditorStore from "@/lib/editorStore";
 
 import { useRef } from "react";
 import { Input } from "../ui/input";
+import { getImageUrl } from "@/lib/utils";
 
 const Workspace = () => {
   const { selectedImage, selectedLayer, setTextOptions, allLayers } = useEditorStore()
@@ -69,7 +70,7 @@ const Workspace = () => {
                 >
                   {selectedImage ? (
                     <img
-                      src={selectedImage}
+                      src={getImageUrl(selectedImage)}
                       loading="eager"
                       className="w-full h-full object-contain"
                       style={{ display: "block" }}
@@ -124,7 +125,7 @@ const Workspace = () => {
             );
           })()
         ) : (
-          <img src={selectedImage} loading="eager" className="w-full max-w-93.75 " />
+          <img src={getImageUrl(selectedImage)} loading="eager" className="w-full max-w-93.75 " />
         )}
       </div>
     </div>

@@ -2,11 +2,11 @@ import { Button } from "@/components/ui/button";
 import useEditorStore from "@/lib/editorStore";
 import Compact from "@uiw/react-color-compact";
 import { ChevronDown, RectangleHorizontal, RectangleVertical } from "lucide-react";
-import CustomSwitch from "../customSwitch/CustomSwitch";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import CustomSwitch from "../../customSwitch/CustomSwitch";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 
 import type { CanvasSizeOption } from "@/types";
-import { ButtonGroup } from "../ui/button-group";
+import { ButtonGroup } from "../../ui/button-group";
 import { useEffect, useState } from "react";
 
 

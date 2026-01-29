@@ -2,7 +2,7 @@ import Board from "../models/board.model.ts"
 import Pin from "../models/pin.model.ts"
 
 export const getUserBoards = async (req: any, res: any) => {
-  const { userId } = req.params
+  const userId = req.userId
 
   const boards = await Board.find({ user: userId })
   console.log("boards", boards);

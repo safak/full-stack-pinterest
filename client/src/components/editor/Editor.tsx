@@ -1,6 +1,7 @@
-import Layers from "../layers/Layers"
-import Options from "../options/Options"
-import Workspace from "../workspace/Workspace"
+
+import Options from "./options/Options"
+import Workspace from "./Workspace"
+import Layers from "./Layers"
 
 
 const Editor = () => {

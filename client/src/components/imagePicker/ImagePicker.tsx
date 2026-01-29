@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn, getImageUrl } from "@/lib/utils"
 import { Pencil, Upload } from "lucide-react"
 import { useDropzone } from "react-dropzone"
 import type { UploadedFile } from "../pinCreationForm/PinCreationForm"
@@ -20,12 +20,14 @@ const ImagePicker = ({
   setFileError,
   setIsEditing,
   showEditButton = true,
+  requestStatus,
 }: {
   uploadedFile: UploadedFile | null;
   setUploadedFile: React.Dispatch<React.SetStateAction<UploadedFile | null>>;
   setFileError: React.Dispatch<React.SetStateAction<string | null>>;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   showEditButton?: boolean;
+  requestStatus?: string;
 }) => {
 
   const onDrop = (acceptedFiles: File[], rejectedFiles: any[]) => {
@@ -34,29 +36,31 @@ const ImagePicker = ({
     if (rejectedFiles.length > 0) {
       const error = rejectedFiles[0].errors[0]
       if (error.code === "file-too-large") {
-        setFileError("File is too large. Max size is 20MB for images and 200MB for videos.")
+        setFileError("File is too large. Max size is 20MB for images and 100MB for videos.")
       } else if (error.code === "file-invalid-type") {
         setFileError("Invalid file type. Please upload a .jpg, .png, .gif, .webp, or .mp4 file.")
       }
       return
     }
+    if (!uploadedFile?.preview) {
 
-    if (acceptedFiles.length > 0) {
-      const file = acceptedFiles[0]
-      const isVideo = file.type.startsWith("video/")
-      const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_FILE_SIZE
-      console.log("file>>>>>>>>>>>>>", file);
+      if (acceptedFiles.length > 0) {
+        const file = acceptedFiles[0]
+        const isVideo = file.type.startsWith("video/")
+        const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_FILE_SIZE
 
-      if (file.size > maxSize) {
-        setFileError(`File is too large. Max size is ${isVideo ? "200MB" : "20MB"}.`)
-        return
+        if (file.size > maxSize) {
+          setFileError(`File is too large. Max size is ${isVideo ? "100MB" : "20MB"}.`)
+          return
+        }
+
+        setUploadedFile({
+          file,
+          preview: URL.createObjectURL(file),
+        })
       }
-
-      setUploadedFile({
-        file,
-        preview: URL.createObjectURL(file),
-      })
     }
+
   }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -86,7 +90,7 @@ const ImagePicker = ({
         uploadedFile && "border-none p-0",
       )}
     >
-      <input {...getInputProps()} />
+      <input {...getInputProps()} disabled={requestStatus ? requestStatus === "pending" : false} />
 
       {uploadedFile ? (
         <div className="relative h-full w-full overflow-hidden rounded-2xl">
@@ -94,17 +98,18 @@ const ImagePicker = ({
             <video src={uploadedFile.preview} className="h-full w-full object-cover" controls />
           ) : (
             <img
-              src={uploadedFile.preview || "/placeholder.svg"}
+              src={getImageUrl(uploadedFile.preview)}
               alt="Preview"
               className="h-full w-full object-cover"
             />
           )}
           {showEditButton && (
             <Button
+              disabled={requestStatus ? requestStatus === "pending" : false}
               onClick={(e) => {
                 e.stopPropagation()
-                // removeFile()
                 setIsEditing(true)
+                return
               }}
               className="absolute right-2 top-2 rounded-full! bg-white/80 transition-colors hover:bg-white"
               variant="default"
@@ -126,8 +131,9 @@ const ImagePicker = ({
             We recommend using high-quality .jpg files less than 20 MB or .mp4 files less than 200 MB.
           </p>
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   )
 }
 

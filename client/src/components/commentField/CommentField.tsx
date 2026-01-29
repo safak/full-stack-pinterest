@@ -37,7 +37,6 @@ const CommentField = ({ postId, userId }: { postId: string, userId: string }) =>
   }
 
   const handleSelectSticker = (stickerData: any) => {
-    console.log("stickerData", stickerData);
     // extract best-available sticker url
     const url = stickerData?.images?.fixed_width?.url || stickerData?.images?.original?.url || stickerData?.images?.downsized?.url || stickerData?.url || ""
     if (!url) return

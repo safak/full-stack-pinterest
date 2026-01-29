@@ -7,6 +7,17 @@ const defaultCanvasOptions: CanvasOptions = {
   backgroundColor: "#ffffff"
 };
 
+const defaultTextOptions: TextOptions = {
+  text: "Add text",
+  fontSize: 48,
+  color: "#000",
+  top: 50,
+  left: 50,
+  alignment: "left",
+  highlight: false,
+}
+
+
 const useEditorStore = create<EditorState>(
   (set) => ({
     selectedLayer: { id: 2, name: "Canvas", type: "canvas", canvasOptions: defaultCanvasOptions },
@@ -47,23 +58,42 @@ const useEditorStore = create<EditorState>(
       };
     }),
 
-    addLayer: () => set((state: EditorState) => {
+    resetCanvasOptions: () => set((state: EditorState) => {
+      const updatedLayers = state.allLayers.map(layer => {
+        if (layer.type === "canvas") {
+          return { ...layer, canvasOptions: defaultCanvasOptions };
+        }
+        return layer;
+      });
+      return ({
+        allLayers: updatedLayers,
+        selectedLayer: {
+          ...state.selectedLayer,
+          canvasOptions: defaultCanvasOptions
+        }
+      })
+    }),
+
+    addTextLayer: () => set((state: EditorState) => {
       if (state.allLayers.length >= 10) return {};
       const newLayer: Layer = {
         id: state.allLayers.length + 1,
         name: `Add text`,
         type: "text",
-        textOptions: {
-          text: "Add text",
-          fontSize: 48,
-          color: "#000",
-          top: 50,
-          left: 50,
-          alignment: "left",
-          highlight: false,
-        }
+        textOptions: defaultTextOptions
       };
       return { allLayers: [newLayer, ...state.allLayers,] };
+    }),
+
+    removeTextLayers: () => set(() => {
+      const resetLayers: Layer[] = [
+        { id: 1, name: "Image", type: "image" },
+        { id: 2, name: "Canvas", type: "canvas", canvasOptions: defaultCanvasOptions }
+      ];
+      return {
+        allLayers: resetLayers,
+        selectedLayer: resetLayers[1]
+      };
     }),
 
     removeLayer: (layerId: number) => set((state: EditorState) => {

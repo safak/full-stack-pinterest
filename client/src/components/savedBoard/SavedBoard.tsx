@@ -5,8 +5,6 @@ import { Spinner } from '../ui/spinner'
 
 const SavedBoard = ({ userId = "" }: { userId: string }) => {
   const { data: board, status, error } = useGetBoards({ userId })
-  console.log("board", board);
-
 
   if (status === "pending") {
     return (

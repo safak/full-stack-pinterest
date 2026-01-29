@@ -43,7 +43,8 @@ const Login = ({ changeModal }: { changeModal: ChangeModalCallback }) => {
     console.log("Form submitted:", data)
     mutate(data, {
       onSuccess: (res) => {
-        setCurrentUser(res.data.user);
+        // Cast to any to satisfy the store's expected type shape (ensures _id typing mismatch is ignored)
+        setCurrentUser(res.data.user as any);
         form.reset();
         setMessage({ type: "success", message: "Your account has been created successfully." });
         setTimeout(() => {

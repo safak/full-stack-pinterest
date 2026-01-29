@@ -13,8 +13,6 @@ const ProfilePage = () => {
   const [selectedCollection, setSelectedCollection] = useState("created")
 
   const { data: userData, status: statusUser, error: errorUser, } = useGetUser(id || "");
-  console.log("userData", userData);
-
 
   const { data: pinsResponse, status, error, hasNextPage, fetchNextPage } = useGetAllPins({ userId: userData?.data?._id || "" });
 

@@ -9,18 +9,11 @@ import Image from "../image/Image";
 import type { Pin } from "@/types";
 
 
-// export type GalleryItemProps = {
-//   id: number | string;
-//   media: string;
-//   width: number;
-//   height: number;
-// }
-
 const GalleryItem = ({ item, className, style }: { item: Pin; className?: string; style?: CSSProperties }) => {
   const navigate = useNavigate();
 
   return (
-    <Card style={style} className={`block hover:flex h-max border-0 rounded-lg p-0 relative gallery-item ${className ?? ""}`} >
+    <Card style={style} className={`block hover:flex hover:items-center h-max border-0 rounded-lg p-0 relative gallery-item hover:min-h-33.75 ${className ?? ""}`} >
 
       <Image item={item} />
       {/* Overlay */}

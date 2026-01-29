@@ -11,10 +11,11 @@ export const useCreatePin = () => {
 
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['pins'] })
+      await queryClient.invalidateQueries({ queryKey: ['images'] })
     },
 
     onError: (error: ApiError) => {
-      console.error(error.message);
+      return error
     },
   });
 };

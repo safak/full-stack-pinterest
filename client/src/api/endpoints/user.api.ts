@@ -1,9 +1,9 @@
-import type { UpdateUserPayload, PostUser } from "@/types";
+import type { UpdateUserPayload, PostUser, User } from "@/types";
 import api from "../axios";
 
 export const getAllUser = () => api.get<PostUser[]>("/users");
 
-export const getUser = (userId: string) => api.get<PostUser>(`/users/${userId}`);
+export const getUser = (userId: string) => api.get<User>(`/users/${userId}`);
 
 export const updateUser = ({ userId, payload }: { userId: string, payload: UpdateUserPayload }) => api.patch<PostUser>(`/users/${userId}`, payload);
 

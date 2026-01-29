@@ -1,5 +1,10 @@
+import ImageKit from 'imagekit'
 import Pin from '../models/pin.model.ts'
-import User from '../models/user.model.ts'
+import Image from '../models/image.model.ts'
+
+const IK_PUBLIC_KEY = process.env.IK_PUBLIC_KEY
+const IK_PRIVATE_KEY = process.env.IK_PRIVATE_KEY
+const IK_URL_ENDPOINT = process.env.IK_URL_ENDPOINT
 
 // GET ALL PINS
 export const getPins = async (req: any, res: any) => {
@@ -40,52 +45,56 @@ export const getPin = async (req: any, res: any) => {
 // CREATE PIN
 export const createPin = async (req: any, res: any) => {
   const pin = req.body
+  const userId = req.userId
+  if (!pin.title || !pin.description || !pin.imageId) {
+    return res.status(400).json({ message: "Missing required fields." })
+  }
+  try {
+    const imagekit = new ImageKit({
+      publicKey: IK_PUBLIC_KEY!,
+      privateKey: IK_PRIVATE_KEY!,
+      urlEndpoint: IK_URL_ENDPOINT!,
+    });
+
+    const image = await Image.findById(pin.imageId);
+    if (!image) {
+      return res.status(404).json({ message: "Image not found." });
+    }
+
+    const imageDetails = await imagekit.getFileDetails(image.fileId);
 
 
-  const newPin = await Pin.create({
-    ...pin,
-  })
-  console.log("created pin", newPin);
+    // flag image as published
+    await Image.findByIdAndUpdate(pin.imageId, { published: true });
+
+    console.log("imageDetails", imageDetails);
 
 
-  return res.status(201).json({ message: "Pin created successfully." })
+
+    const newPin = await Pin.create({
+      media: imageDetails.filePath,
+      width: imageDetails.width || 372,
+      height: imageDetails.height || 372,
+      link: pin.link || null,
+      board: pin.board || null,
+      title: pin.title,
+      description: pin.description,
+      tags: pin.tags ? pin.tags.split(",").map((tag: string) => tag.trim()) : [],
+      user: userId,
+      likes: []
+    })
+
+    console.log("created pin", newPin);
+
+
+    return res.status(201).json({ message: "Pin created successfully.", data: newPin })
+  } catch (error) {
+    console.error("Error creating pin:", error);
+    return res.status(500).json({ message: "Error creating pin.", error })
+  }
 }
 
-// media: {
-//     type: String,
-//     required: true
-//   },
-//   width: {
-//     type: Number,
-//     required: true
-//   },
-//   height: {
-//     type: Number,
-//     required: true
-//   },
-//   title: {
-//     type: String,
-//     required: true
-//   },
-//   description: {
-//     type: String,
-//     required: true
-//   },
-//   link: {
-//     type: String,
-//   },
-//   board: {
-//     type: Schema.Types.ObjectId,
-//     ref: "Board",
-//   },
-//   tags: {
-//     type: [String]
-//   },
-//   likes: [{
-//     type: Schema.Types.ObjectId,
-//     ref: "User"
-//   }]
-
+// UPDATE PIN
 export const updatePin = async (req: any, res: any) => {
   const { pinId } = req.params
   const { description, likes, media, width, height, title, link, board, tags } = req.body

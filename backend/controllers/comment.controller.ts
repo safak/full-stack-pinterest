@@ -6,7 +6,7 @@ export const createComment = async (req: any, res: any) => {
     pin,
     description,
     user,
-    likes: likes.length ? likes : []
+    likes: likes?.length ? likes : []
   })
   await newComment.save()
   return res.status(201).json({ message: "Comment created successfully", data: newComment })

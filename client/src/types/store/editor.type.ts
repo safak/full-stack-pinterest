@@ -33,9 +33,11 @@ export type EditorState = {
   allLayers: Layer[]
   selectedImage: string,
 
-  addLayer: () => void;
+  addTextLayer: () => void;
   setTextOptions: (newOptions: TextOptions) => void;
+  removeTextLayers: () => void;
   setCanvasOptions: (newOptions: CanvasOptions) => void;
+  resetCanvasOptions: () => void;
   setSelectedLayer: (newLayer: Layer) => void
   removeLayer: (layerId: number) => void;
   removeSelectedLayer: () => void;

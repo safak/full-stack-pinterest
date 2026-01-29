@@ -5,10 +5,11 @@ import { Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "../ui/button";
+import { getImageUrl } from "@/lib/utils";
 
 const Layers = () => {
   const navigate = useNavigate();
-  const { selectedImage, selectedLayer, allLayers, setSelectedLayer: setLayer, addLayer, removeLayer } = useEditorStore();
+  const { selectedImage, selectedLayer, allLayers, setSelectedLayer: setLayer, addTextLayer: addLayer, removeLayer } = useEditorStore();
   const { TEXT_IMG } = ASSETS
 
   useEffect(() => {
@@ -39,9 +40,9 @@ const Layers = () => {
             >
               <div className="flex items-center gap-2">
                 {layer.type !== "canvas" ?
-                  <img src={layer.type === "text" ? TEXT_IMG : selectedImage} loading="eager" className="rounded-md max-w-12 h-12 max-h-12" />
+                  <img src={layer.type === "text" ? TEXT_IMG : getImageUrl(selectedImage)} loading="eager" className="rounded-md max-w-12 h-12 max-h-12" />
                   :
-                  <div className="rounded-md border-gray-400 border-2 w-20 h-20  max-w-12 max-h-12 bg-blue-500"></div>
+                  <div className="rounded-md border-gray-400 border-2 w-20 h-20  max-w-12 max-h-12" style={{ backgroundColor: selectedLayer.canvasOptions?.backgroundColor }}></div>
                 }
                 <p className="text-sm">{layer.name}</p>
               </div>

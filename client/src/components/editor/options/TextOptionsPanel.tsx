@@ -2,9 +2,9 @@
 import useEditorStore from "@/lib/editorStore";
 import Compact from "@uiw/react-color-compact";
 import { BookA, ChevronDown, TextAlignCenter, TextAlignStart } from "lucide-react";
-import CustomSwitch from "../customSwitch/CustomSwitch";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { Input } from "../ui/input";
+import CustomSwitch from "../../customSwitch/CustomSwitch";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
+import { Input } from "../../ui/input";
 
 
 const TextOptionsPanel = () => {
@@ -54,11 +54,10 @@ const TextOptionsPanel = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuItem>
-                <Compact className="" color={selectedLayer.textOptions?.color} onChange={(color) => {
-                  console.log("color.hex", color.hex);
-
-                  return handleSetTextOptions("color", color.hex)
-                }} />
+                <Compact
+                  color={selectedLayer.textOptions?.color}
+                  onChange={(color) => handleSetTextOptions("color", color.hex)}
+                />
               </DropdownMenuItem>
 
             </DropdownMenuContent>

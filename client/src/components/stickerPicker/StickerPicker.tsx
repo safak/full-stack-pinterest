@@ -12,13 +12,11 @@ const StickerPicker = ({ onSelect, type, setType }: { onSelect: (gif: any) => vo
   const [query, setQuery] = useState<string>(type ?? "")
 
   useEffect(() => {
-    console.log("type changed", type);
     setQuery(type ?? "")
   }, [type])
 
   // debounce updating parent `type` to avoid too many requests while typing
   useEffect(() => {
-    console.log("query changed", query);
     const id = setTimeout(() => setType(query), 300)
     return () => clearTimeout(id)
   }, [query, setType])

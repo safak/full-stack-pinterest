@@ -1,8 +1,8 @@
 import useEditorStore from "@/lib/editorStore";
 import { useState } from "react";
-import ImagePicker from "../imagePicker/ImagePicker";
-import TextOptionsPanel from "../textOptionsPanel/TextOptionsPanel";
-import CanvasPanelOptions from "../canvasPanelOptions/CanvasPanelOptions";
+import ImagePicker from "../../imagePicker/ImagePicker";
+import TextOptionsPanel from "./TextOptionsPanel";
+import CanvasPanelOptions from "./CanvasPanelOptions";
 
 
 const LAYERS = {
@@ -41,7 +41,9 @@ const Options = () => {
         </div>
       ) : (
         // Canvas Options
-        <div><CanvasPanelOptions /></div>
+        <div>
+          <CanvasPanelOptions />
+        </div>
       )}
     </div>
   )

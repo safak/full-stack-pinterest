@@ -5,8 +5,10 @@ import authRouter from "./routes/auth.route.ts"
 import pinRouter from "./routes/pin.route.ts"
 import commentRouter from "./routes/comment.route.ts"
 import boardRouter from "./routes/board.route.ts"
+import imageRouter from "./routes/image.route.ts"
 import connectDB from "./db/connectDB.ts"
 import cookieParser from "cookie-parser"
+import fileUpload from "express-fileupload"
 
 const PORT = process.env.PORT || 3000
 const CLIENT_URL = process.env.CLIENT_URL!;
@@ -20,7 +22,7 @@ app.use(
     origin: (origin, callback) => {
       // Allow server-to-server or Postman
       if (!origin) return callback(null, true);
- 
+
       if (origin === CLIENT_URL) {
         return callback(null, true);
       }
@@ -36,11 +38,13 @@ app.use(
 );
 
 app.use(cookieParser())
+app.use(fileUpload())
 app.use("/users", userRouter)
 app.use("/auth", authRouter)
 app.use("/pins", pinRouter)
 app.use("/comments", commentRouter)
 app.use("/boards", boardRouter)
+app.use("/images", imageRouter)
 
   ; (async () => {
     try {

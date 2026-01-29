@@ -8,10 +8,17 @@ export type Pin = {
   link?: string;
   board?: string
   tags?: string[]
-  likes?: string[] 
+  likes?: string[]
 };
 
-export type CreatePinPayload = Omit<Pin, "_id">;
+export type CreatePinPayload = {
+  title: string;
+  description: string
+  link?: string;
+  board?: string
+  tags?: string[]
+  imageId: string
+}
 
 export type UpdatePinPayload = Partial<
   Pick<Pin, "board" | "description" | "title" | "tags" | "link" | "media" | "likes">

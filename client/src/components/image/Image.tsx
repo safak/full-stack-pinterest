@@ -15,7 +15,7 @@ type Props = {
   item?: ImageItem;
 }
 
-const Image = ({ item = { media: '', loading: "lazy", alt: "N/A", w: 372, className: "" } }: Props) => {
+const Image = ({ item = { media: '', loading: "lazy", alt: "pin", w: 372, className: "" } }: Props) => {
   return (
     <IkImage
       className={`w-full rounded-lg object-cover! ${item.className}`}
@@ -24,7 +24,7 @@ const Image = ({ item = { media: '', loading: "lazy", alt: "N/A", w: 372, classN
       transformation={[
         { width: item.w },
       ]}
-      loading={"lazy"}
+      loading={item.loading}
       alt={item.alt}
     />
   )

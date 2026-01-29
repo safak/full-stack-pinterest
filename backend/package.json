@@ -11,12 +11,16 @@
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
 		"express": "^5.2.1",
+		"express-fileupload": "^1.5.2",
+		"imagekit": "^6.0.0",
 		"jsonwebtoken": "^9.0.3",
-		"mongoose": "^9.1.3"
+		"mongoose": "^9.1.3",
+		"sharp": "^0.34.5"
 	},
 	"devDependencies": {
 		"@types/cors": "^2.8.19",
 		"@types/express": "^5.0.6",
+		"@types/express-fileupload": "^1.5.1",
 		"@types/jsonwebtoken": "^9.0.10"
 	}
 }

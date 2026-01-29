@@ -14,8 +14,6 @@ const useAuthStore = create<AuthState>()(
     (set) => ({
       currentUser: null,
       setCurrentUser: (user) => {
-        console.log("Setting current user:", user);
-
         return set({ currentUser: user });
       },
       removeCurrentUser: () => set({ currentUser: null }),
