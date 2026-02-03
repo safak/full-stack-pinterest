@@ -40,7 +40,6 @@ const Login = ({ changeModal }: { changeModal: ChangeModalCallback }) => {
   })
 
   const onSubmit = (data: FormData) => {
-    console.log("Form submitted:", data)
     mutate(data, {
       onSuccess: (res) => {
         // Cast to any to satisfy the store's expected type shape (ensures _id typing mismatch is ignored)

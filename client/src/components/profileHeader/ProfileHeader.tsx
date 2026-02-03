@@ -1,9 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Ellipsis, Upload } from "lucide-react";
-import FollowButton from "../followButton/FollowButton";
 import useAuthStore from "@/lib/authStore";
+import { Ellipsis, Upload } from "lucide-react";
 import { useNavigate } from "react-router";
+import FollowButton from "../followButton/FollowButton";
 
 export type ProfileHeaderProps = {
   avatarUrl?: string;
@@ -28,12 +28,13 @@ export default function ProfileHeader({
 }: ProfileHeaderProps) {
   const { currentUser } = useAuthStore()
   const navigate = useNavigate();
+
   return (
     <div className="flex flex-col items-center bg-white p-6 shadow-[rgba(0,0,15,0.5)_0px_8px_6px_0px] rounded-2xl max-w-md mx-auto mt-4">
       {/* Avatar + Name */}
       <Avatar className="h-24 w-24">
-        {avatarUrl ? (
-          <AvatarImage src={avatarUrl} />
+        {avatarUrl || currentUser?.img ? (
+          <AvatarImage src={currentUser?.img || avatarUrl} />
         ) : (
           <AvatarFallback className="text-xl uppercase">
             {name.charAt(0)}
@@ -54,31 +55,41 @@ export default function ProfileHeader({
         <span>·</span>
         {monthlyViews && <span>{monthlyViews} monthly views</span>}
       </div>
+      {/* Edit button */}
+      <div className="mt-3 flex gap-4 text-sm font-medium text-gray-700">
+        {currentUser && <Button variant={"outline"} size="sm" onClick={() => navigate(`/user/edit/${currentUser?._id}`)}>
+          Edit Profile
+        </Button>}
+      </div>
 
       {/* Bio */}
-      {bio && (
-        <p className="mt-2 text-center text-sm text-gray-600">
-          {bio}
-        </p>
-      )}
+      {
+        bio && (
+          <p className="mt-2 text-center text-sm text-gray-600">
+            {bio}
+          </p>
+        )
+      }
 
       {/* Buttons */}
-      {currentUser?.username !== username && <div className="flex items-center justify-center gap-2 mt-4">
-        <Button
-          variant="ghost"
-          className="rounded-lg"
-          onClick={() => !currentUser?._id && navigate("/auth")}
-        >
-          <Upload className="w-6! h-6!" size={9} />
-        </Button>
-        <Button variant="secondary" className="bg-gray-200" size="xl" onClick={() => !currentUser?._id && navigate("/auth")}>
-          Message
-        </Button>
-        <FollowButton isFollowing={isFollowing || false} username={username} />
-        <Button variant="ghost" size="xl" className="px-2!">
-          <Ellipsis className="w-7! h-7!" />
-        </Button>
-      </div>}
-    </div>
+      {
+        currentUser?.username !== username && <div className="flex items-center justify-center gap-2 mt-4">
+          <Button
+            variant="ghost"
+            className="rounded-lg"
+            onClick={() => !currentUser?._id && navigate("/auth")}
+          >
+            <Upload className="w-6! h-6!" size={9} />
+          </Button>
+          <Button variant="secondary" className="bg-gray-200" size="xl" onClick={() => !currentUser?._id && navigate("/auth")}>
+            Message
+          </Button>
+          <FollowButton isFollowing={isFollowing || false} username={username} />
+          <Button variant="ghost" size="xl" className="px-2!">
+            <Ellipsis className="w-7! h-7!" />
+          </Button>
+        </div>
+      }
+    </div >
   );
 }

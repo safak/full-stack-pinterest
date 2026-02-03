@@ -4,6 +4,7 @@ import type {
   CreatePinPayload,
   UpdatePinPayload,
   PostType,
+  PinInteraction,
 } from "@/types";
 
 
@@ -16,3 +17,9 @@ export const createPin = (payload: CreatePinPayload) => api.post<Pin>("/pins", p
 export const updatePin = ({ pinId, payload }: { pinId: string, payload: UpdatePinPayload }) => api.patch<Pin>(`/pins/${pinId}`, payload);
 
 export const deletePin = (pinId: string) => api.delete<void>(`/pins/${pinId}`);
+
+export const interactPin = ({ pinId, type }: { pinId: string, type: "like" | "save" }) => api.post<Pin>(`/pins/interact/${pinId}`, { type });
+
+export const checkPinInteraction = (pinId: string) => api.get<PinInteraction>(`/pins/interaction-check/${pinId}`);
+
+export const getSavedPins = (userId: string) => api.get<Pin[]>(`/pins/saved-pins/${userId}`);

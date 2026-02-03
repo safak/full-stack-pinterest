@@ -1,6 +1,9 @@
 import ImageKit from 'imagekit'
 import Pin from '../models/pin.model.ts'
 import Image from '../models/image.model.ts'
+import Like from '../models/like.model.ts'
+import Save from '../models/save.model.ts'
+import jwt from 'jsonwebtoken'
 
 const IK_PUBLIC_KEY = process.env.IK_PUBLIC_KEY
 const IK_PRIVATE_KEY = process.env.IK_PRIVATE_KEY
@@ -67,10 +70,6 @@ export const createPin = async (req: any, res: any) => {
     // flag image as published
     await Image.findByIdAndUpdate(pin.imageId, { published: true });
 
-    console.log("imageDetails", imageDetails);
-
-
-
     const newPin = await Pin.create({
       media: imageDetails.filePath,
       width: imageDetails.width || 372,
@@ -84,9 +83,6 @@ export const createPin = async (req: any, res: any) => {
       likes: []
     })
 
-    console.log("created pin", newPin);
-
-
     return res.status(201).json({ message: "Pin created successfully.", data: newPin })
   } catch (error) {
     console.error("Error creating pin:", error);
@@ -96,16 +92,16 @@ export const createPin = async (req: any, res: any) => {
 
 // UPDATE PIN
 export const updatePin = async (req: any, res: any) => {
-  const { pinId } = req.params
+  const { id } = req.params
   const { description, likes, media, width, height, title, link, board, tags } = req.body
 
-  const existingPin = await Pin.findById(pinId)
+  const existingPin = await Pin.findById(id)
   if (!existingPin) {
     return res.status(404).json({ message: "Pin not found" })
   }
 
   const updatedPin = await Pin.findByIdAndUpdate(
-    pinId,
+    id,
     {
       description: description ?? existingPin.description,
       media: media ?? existingPin.media,
@@ -121,4 +117,115 @@ export const updatePin = async (req: any, res: any) => {
   )
 
   return res.status(200).json({ message: "Pin updated successfully", data: updatedPin })
+}
+
+export const deletePin = async (req: any, res: any) => {
+  const { id } = req.params
+  await Pin.findByIdAndDelete(id)
+  return res.status(200).json({ message: "Pin deleted successfully." })
+}
+
+export const interactionCheck = async (req: any, res: any) => {
+  const { id } = req.params;
+  const token = req.cookies.token;
+
+  const likeCount = await Like.countDocuments({ pin: id });
+  let userId = null;
+  if (!token) {
+    return res.status(200).json({ message: "Pin interaction status fetched successfully.", data: { likeCount, isLiked: false, isSaved: false } });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret')
+    userId = (decoded as any).id
+  } catch (error) {
+    return res
+      .status(200)
+      .json({ message: "Pin interaction status fetched successfully.", data: { likeCount, isLiked: false, isSaved: false } });
+  }
+
+  const isLiked = await Like.findOne({
+    user: userId,
+    pin: id,
+  });
+  const isSaved = await Save.findOne({
+    user: userId,
+    pin: id,
+  });
+
+  return res.status(200).json({
+    message: "Pin interaction status fetched successfully.",
+    data: {
+      likeCount,
+      isLiked: isLiked ? true : false,
+      isSaved: isSaved ? true : false,
+    }
+  });
+
+};
+
+
+export const interactPin = async (req: any, res: any) => {
+  const { id } = req.params
+  const { type } = req.body
+  const userId = req.userId
+
+  const pin = await Pin.findById(id)
+
+  if (!pin) return res.status(404).json({ message: "Pin not found." })
+
+  if (type === "like") {
+    const isLiked = await Like.findOne({
+      pin: id,
+      user: userId,
+    });
+
+    if (isLiked) {
+      await Like.deleteOne({
+        pin: id,
+        user: userId,
+      });
+    } else {
+      await Like.create({
+        pin: id,
+        user: userId,
+      });
+    }
+  } else {
+    const isSaved = await Save.findOne({
+      pin: id,
+      user: userId,
+    });
+
+    if (isSaved) {
+      await Save.deleteOne({
+        pin: id,
+        user: userId,
+      });
+    } else {
+      await Save.create({
+        pin: id,
+        user: userId,
+      });
+
+      const isSaved = await Save.findOne({
+        user: userId,
+        pin: id,
+      });
+    }
+  }
+
+  await pin.save()
+
+  return res.status(200).json({ message: "Pin interaction updated successfully.", data: pin })
+}
+
+export const getSavedPins = async (req: any, res: any) => {
+  const userId = req.params.userId
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" })
+  }
+  const saves = await Save.find({ user: userId }).populate('pin')
+  const savedPins = saves.map(save => save.pin)
+  return res.status(200).json({ message: "Saved pins fetched successfully.", data: savedPins })
 }

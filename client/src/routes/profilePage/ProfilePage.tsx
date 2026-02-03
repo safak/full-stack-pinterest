@@ -59,9 +59,11 @@ const ProfilePage = () => {
               Saved
             </Button>
           </div>
-          {selectedCollection === "created" ?
-            (<Gallery data={allPins} loadMore={fetchNextPage} hasNextPage={hasNextPage} />)
-            : (<SavedBoard userId={id || ""} />)}
+          {selectedCollection === "created" ? (
+            <Gallery data={allPins} loadMore={fetchNextPage} hasNextPage={hasNextPage} />
+          ) : (
+            <SavedBoard userId={id || ""} />
+          )}
         </div>
       )}
     </div>

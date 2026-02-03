@@ -5,7 +5,6 @@ export const getUserBoards = async (req: any, res: any) => {
   const userId = req.userId
 
   const boards = await Board.find({ user: userId })
-  console.log("boards", boards);
 
   const boardsWithPinsDetails = await Promise.all(boards.map(async (board) => {
     const pinsCount = await Pin.countDocuments({ board: board._id })

@@ -1,33 +1,51 @@
 import * as React from "react"
-import * as SwitchPrimitive from "@radix-ui/react-switch"
 
 import { cn } from "@/lib/utils"
 
-function Switch({
-  className,
-  size = "default",
-  ...props
-}: React.ComponentProps<typeof SwitchPrimitive.Root> & {
+type SwitchProps = React.InputHTMLAttributes<HTMLInputElement> & {
   size?: "sm" | "default"
-}) {
-  return (
-    <SwitchPrimitive.Root
-      data-slot="switch"
-      data-size={size}
-      className={cn(
-        "peer data-[state=checked]:bg-primary data-[state=unchecked]:bg-input focus-visible:border-ring focus-visible:ring-ring/50 dark:data-[state=unchecked]:bg-input/80 group/switch inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-[1.15rem] data-[size=default]:w-8 data-[size=sm]:h-3.5 data-[size=sm]:w-6",
-        className
-      )}
-      {...props}
-    >
-      <SwitchPrimitive.Thumb
-        data-slot="switch-thumb"
-        className={cn(
-          "bg-background dark:data-[state=unchecked]:bg-foreground dark:data-[state=checked]:bg-primary-foreground pointer-events-none block rounded-full ring-0 transition-transform group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3 data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0"
-        )}
-      />
-    </SwitchPrimitive.Root>
-  )
 }
+
+/**
+ * Lightweight Switch implemented with a hidden checkbox (peer) to avoid requiring @radix-ui/react-switch.
+ * Keeps the same data attributes and Tailwind utility classes so styles remain compatible.
+ */
+const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(function Switch(
+  { className, size = "default", ...props },
+  ref
+) {
+  return (
+    <label
+      data-slot="switch-wrapper"
+      style={{ display: "inline-block" }}
+    >
+      <input
+        type="checkbox"
+        role="switch"
+        data-size={size}
+        className="sr-only peer"
+        ref={ref}
+        {...props}
+      />
+      <span
+        data-slot="switch"
+        data-size={size}
+        className={cn(
+          "peer-checked:bg-primary bg-input focus-visible:border-ring focus-visible:ring-ring/50 dark:bg-input/80 inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-[1.15rem] data-[size=default]:w-8 data-[size=sm]:h-3.5 data-[size=sm]:w-6",
+          className
+        )}
+      >
+        <span
+          data-slot="switch-thumb"
+          className={cn(
+            "bg-background dark:bg-foreground pointer-events-none block rounded-full ring-0 transition-transform translate-x-0 peer-checked:translate-x-[calc(100%-2px)] data-[size=default]:h-4 data-[size=default]:w-4 data-[size=sm]:h-3 data-[size=sm]:w-3"
+          )}
+        />
+      </span>
+    </label>
+  )
+})
+
+Switch.displayName = "Switch"
 
 export { Switch }

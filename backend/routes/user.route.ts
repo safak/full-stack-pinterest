@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.get("/:id", getUser)
 router.get("/", getUsers)
-router.patch("/update/:id", updateUser)
+router.patch("/", verifyToken, updateUser)
 router.post("/follow/:username", verifyToken, followUser)
 router.post("/delete/:id", deleteUser)
 

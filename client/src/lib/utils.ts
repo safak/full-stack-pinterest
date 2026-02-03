@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const getImageUrl = (media: string) => {
-  if(media.startsWith("blob:") || media.startsWith("data:")) {
+  if (media.startsWith("blob:") || media.startsWith("data:")) {
     return media;
   }
   return `${ik_url}/${media}`;

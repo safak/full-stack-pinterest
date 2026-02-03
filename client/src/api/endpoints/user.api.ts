@@ -5,7 +5,11 @@ export const getAllUser = () => api.get<PostUser[]>("/users");
 
 export const getUser = (userId: string) => api.get<User>(`/users/${userId}`);
 
-export const updateUser = ({ userId, payload }: { userId: string, payload: UpdateUserPayload }) => api.patch<PostUser>(`/users/${userId}`, payload);
+export const updateUser = (payload: UpdateUserPayload) => api.patch<PostUser>(`/users`, payload, {
+  headers: {
+    'Content-Type': 'multipart/form-data'
+  }
+});
 
 export const followUser = (username: string) => api.post<PostUser>(`/users/follow/${username}`);
 

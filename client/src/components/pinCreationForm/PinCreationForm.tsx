@@ -21,6 +21,7 @@ import ImagePicker from "../imagePicker/ImagePicker"
 import { Spinner } from "../ui/spinner"
 import PinCreationSidebar from "./PinCreationSidebar"
 import { useNavigate } from "react-router"
+import useAuthStore from "@/lib/authStore"
 
 
 
@@ -60,7 +61,8 @@ export function PinCreationForm({
   const { mutate: createImage, status: createImageStatus } = useCreateImage();
   const { mutate: createPin, status: createPinStatus, error: pinCreationError } = useCreatePin();
   const { data: userImages } = useGetImages();
-  const { data: userBoards, status: userBoardsStatus } = useGetBoards();
+  const { currentUser } = useAuthStore();
+  const { data: userBoards, status: userBoardsStatus } = useGetBoards(currentUser ? { userId: currentUser._id! } : { userId: "" });
 
   const currentSelectedImage = userImages?.data.find(image => {
     return image.media === selectedImage
@@ -140,8 +142,6 @@ export function PinCreationForm({
   }
 
   if (createPinStatus === "error" && errorModalOpen) {
-    console.log("pinCreationError", pinCreationError)
-    console.log("pinCreationError", pinCreationError)
     return (
       <AppErrorsModal
         open={errorModalOpen}

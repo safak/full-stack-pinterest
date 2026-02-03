@@ -10,9 +10,11 @@ export type User = {
   isFollowing?: boolean;
 };
 
-export type UpdateUserPayload = Partial<
-  Pick<User, "displayName" | "img" | "username" | "password" | "followers" | "following">
->;
+export type UpdateUserPayload = {
+  displayName?: string;
+  password?: string;
+  img?: File | null;
+}
 
 export type FollowUserPayload = {
   following: string;

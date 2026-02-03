@@ -1,20 +1,28 @@
-import { ChevronDown, Ellipsis, Upload } from "lucide-react";
+import { ChevronDown, Trash, Upload } from "lucide-react";
 import type { CSSProperties } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 
+import { useInteractPin } from "@/hooks/mutations/pin.mutations";
+import useAuthStore from "@/lib/authStore";
+import type { Pin } from "@/types";
 import Image from "../image/Image";
 import "./BoardItem.css";
-import type { Pin } from "@/types";
 
 const BoardItem = ({ item, className, style }: { item: Pin; className?: string; style?: CSSProperties }) => {
   const navigate = useNavigate();
+  const { currentUser } = useAuthStore();
+  const { mutate: interactPin, status } = useInteractPin(item._id!);
+
+  const handleRemovePin = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    interactPin("save");
+  }
 
   return (
     <div>
       <Card style={style} className={`block hover:flex h-max border-0 rounded-lg p-0 relative shadow-none collection-item ${className ?? ""}`} >
-
         <Image item={item} />
         {/* Overlay */}
         <div
@@ -29,13 +37,15 @@ const BoardItem = ({ item, className, style }: { item: Pin; className?: string; 
               Profile
               <ChevronDown />
             </Button>
-            <Button
-              onClick={(e) => e.stopPropagation()}
+            {currentUser && <Button
+              onClick={handleRemovePin}
               variant="destructive"
-              className="rounded-xl float-right py-6 text-lg"
+              className="rounded-full float-right py-2 text-xs"
+              size={"icon-sm"}
+              disabled={status === "pending"}
             >
-              Save
-            </Button>
+              <Trash size={6} />
+            </Button>}
           </div>
           <div className="flex-1 w-full flex justify-end items-end">
             <Button
@@ -48,11 +58,11 @@ const BoardItem = ({ item, className, style }: { item: Pin; className?: string; 
           </div>
         </div>
       </Card >
-      <div className="w-full flex justify-end">
+      {/* <div className="w-full flex justify-end">
         <Button variant="ghost" size={"icon"} className="py-0!">
           <Ellipsis className="w-5! h-5!" />
         </Button>
-      </div>
+      </div> */}
     </div>
   )
 }

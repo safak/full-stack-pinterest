@@ -17,7 +17,6 @@ function buildTransformationString(parsedTextOptions: any[], parsedCanvasOptions
       if (!t || !t.text) return "";
       const lx = Math.round(((t.left || 0) * width) / 375);
       const ly = Math.round(((t.top || 0) * height) / (parsedCanvasOptions?.height || height));
-      // const fs = Math.round((t.fontSize || 16) * 2.1);
       const fs = Math.round((t.fontSize || 16) * width / 372);
       const co = (t.color || "#000000").substring(1);
       return `,l-text,i-${encodeURIComponent(t.text)},fs-${fs},lx-${lx},ly-${ly},co-${co},l-end`;
@@ -110,7 +109,6 @@ export const createImage = async (req: any, res: any) => {
       },
     })
     .then(async (response) => {
-      console.log("response?????????????????", response)
 
       const newImage = await Image.create({
         fileId: response.fileId,
@@ -134,16 +132,12 @@ export const updateImage = async (req: any, res: any) => {
     textOptions,
     canvasOptions,
   } = req.body;
-  console.log("textOptions", textOptions);
-  console.log("canvasOptions", canvasOptions);
 
   if ((!textOptions && !canvasOptions)) {
     return res.status(400).json({ message: "Options are required!" });
   }
 
   const image = await Image.findById(imageId);
-  console.log("image", image?.media.split("/"));
-
 
   if (!image) {
     return res.status(404).json({ message: "Image not found!" });
@@ -300,106 +294,3 @@ export const deleteImage = async (req: any, res: any) => {
   }
   return res.status(204).json({ message: "Image deleted successfully." });
 }
-
-// export const updateImage = async (req: any, res: any) => {
-//   const imageId = req.params.id;
-//   const {
-//     textOptions,
-//     canvasOptions,
-//   } = req.body;
-
-//   const media = req.files.media;
-
-//   if ((!media)) {
-//     return res.status(400).json({ message: "Image is required!" });
-//   }
-
-//   const image = await Image.findById(imageId);
-//   if (!image) {
-//     return res.status(404).json({ message: "Image not found!" });
-//   }
-
-//   const parsedTextOptions = JSON.parse(textOptions || "{}");
-//   const parsedCanvasOptions = JSON.parse(canvasOptions || "{}");
-
-//   const metadata = await sharp(media.data).metadata();
-
-//   const originalOrientation =
-//     metadata.width < metadata.height ? "portrait" : "landscape";
-//   const originalAspectRatio = metadata.width / metadata.height;
-
-//   let clientAspectRatio;
-//   let width;
-//   let height;
-
-//   if (parsedCanvasOptions.size !== "original") {
-//     clientAspectRatio =
-//       parsedCanvasOptions.size.split(":")[0] /
-//       parsedCanvasOptions.size.split(":")[1];
-//   } else {
-//     parsedCanvasOptions.orientation === originalOrientation
-//       ? (clientAspectRatio = originalOrientation)
-//       : (clientAspectRatio = 1 / originalAspectRatio);
-//   }
-
-//   width = metadata.width;
-//   height = metadata.width / Number(clientAspectRatio);
-
-//   const imagekit = new Imagekit({
-//     publicKey: process.env.IK_PUBLIC_KEY!,
-//     privateKey: process.env.IK_PRIVATE_KEY!,
-//     urlEndpoint: process.env.IK_URL_ENDPOINT!,
-//   });
-
-//   const textLeftPosition = Math.round((parsedTextOptions.left * width) / 375);
-//   const textTopPosition = Math.round(
-//     (parsedTextOptions.top * height) / parsedCanvasOptions.height
-//   );
-
-//   let croppingStrategy = "";
-
-//   if (parsedCanvasOptions.size !== "original") {
-//     if (Number(originalAspectRatio) > Number(clientAspectRatio)) {
-//       croppingStrategy = ",cm-pad_resize";
-//     }
-//   } else {
-//     if (
-//       originalOrientation === "landscape" &&
-//       parsedCanvasOptions.orientation === "portrait"
-//     ) {
-//       croppingStrategy = ",cm-pad_resize";
-//     }
-//   }
-
-//   const transformationString = `w-${width},h-${height}${croppingStrategy},bg-${parsedCanvasOptions.backgroundColor.substring(
-//     1
-//   )}${parsedTextOptions.text
-//     ? `,l-text,i-${parsedTextOptions.text},fs-${parsedTextOptions.fontSize * 2.1
-//     },lx-${textLeftPosition},ly-${textTopPosition},co-${parsedTextOptions.color.substring(
-//       1
-//     )},l-end`
-//     : ""
-//     }`;
-
-//   imagekit
-//     .updateFileDetails(image.fileId, {
-//       dfgdfg
-//     })
-//     .then(async (response) => {
-//       // FIXED: ADD NEW BOARD
-
-//       const updatedImage = await Image.findByIdAndUpdate(imageId, {
-//         fileId: response.fileId,
-//         user: req.userId,
-//         media: response.filePath,
-//         published: false,
-//         width: response.width,
-//         height: response.height,
-//       });
-//       return res.status(201).json(updatedImage);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       return res.status(500).json(err);
-//     });
-// };

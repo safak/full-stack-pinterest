@@ -49,8 +49,8 @@ const Topbar = () => {
         <div className="w-max flex gap-1 items-center">
           <Link to={`/user/${currentUser?._id}`}>
             <Avatar >
-              <AvatarImage src={currentUser?.img || "https://github.com/shadcn.png"} />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src={currentUser?.img || ""} />
+              <AvatarFallback>{currentUser?.username?.[0].toUpperCase() || "CN"}</AvatarFallback>
             </Avatar>
           </Link>
           <DropdownMenu>

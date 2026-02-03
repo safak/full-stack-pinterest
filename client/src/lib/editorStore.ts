@@ -103,14 +103,14 @@ const useEditorStore = create<EditorState>(
 
     removeSelectedLayer: () => set({ selectedLayer: { id: 2, name: "Canvas", type: "canvas", canvasOptions: defaultCanvasOptions } }),
 
-    updateSelectedLayer: (newSelectedLayer) => set({ selectedLayer: newSelectedLayer }),
+    updateSelectedLayer: (newSelectedLayer: Layer) => set({ selectedLayer: newSelectedLayer }),
 
     //  For Image
     setSelectedImage: (selectedImage: string) => set({ selectedImage }),
 
     removeSelectedImage: () => set({ selectedImage: "" }),
 
-    updateSelectedImage: (newSelectedImage) => set({ selectedImage: newSelectedImage }),
+    updateSelectedImage: (newSelectedImage: string) => set({ selectedImage: newSelectedImage }),
   })
 );
 

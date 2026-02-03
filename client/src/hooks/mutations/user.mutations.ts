@@ -1,17 +1,19 @@
 import { deleteUser, followUser, updateUser } from "@/api/endpoints/user.api";
-import type { ApiError, FollowUserPayload, UpdateUserPayload } from "@/types";
+import useAuthStore from "@/lib/authStore";
+import type { ApiError, UpdateUserPayload } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
+  const { setCurrentUser } = useAuthStore();
 
   return useMutation({
-    mutationFn: ({ userId, payload }: { userId: string, payload: UpdateUserPayload }) => updateUser({ userId, payload }),
+    mutationFn: (payload: UpdateUserPayload) => updateUser(payload),
 
-    onSuccess: async () => {
-      // 🔥 Update cache immediately (no refetch)
+    onSuccess: async (response) => {
       await queryClient.invalidateQueries({ queryKey: ['users'] })
+      setCurrentUser(response.data)
     },
 
     onError: (error: ApiError) => {

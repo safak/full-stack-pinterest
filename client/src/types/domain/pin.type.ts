@@ -20,6 +20,12 @@ export type CreatePinPayload = {
   imageId: string
 }
 
+export type PinInteraction = {
+  likeCount: number;
+  isLiked: boolean;
+  isSaved: boolean;
+};
+
 export type UpdatePinPayload = Partial<
   Pick<Pin, "board" | "description" | "title" | "tags" | "link" | "media" | "likes">
 >;

@@ -1,4 +1,4 @@
-import { createPin, deletePin, updatePin } from "@/api/endpoints/pin.api";
+import { createPin, deletePin, interactPin, updatePin } from "@/api/endpoints/pin.api";
 import type { ApiError, CreatePinPayload, UpdatePinPayload } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -42,6 +42,20 @@ export const useDeletePin = () => {
 
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: ["pins"] });
+    },
+  });
+};
+
+export const useInteractPin = (pinId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (type: "like" | "save") => interactPin({ pinId, type }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["pins", pinId, "interactions"] })
+      await queryClient.invalidateQueries({ queryKey: ["pins", "saved"] })
+    },
+    onError: (error: ApiError) => {
+      console.error(error.message);
     },
   });
 };

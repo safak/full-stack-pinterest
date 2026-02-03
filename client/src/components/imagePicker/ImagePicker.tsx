@@ -70,15 +70,6 @@ const ImagePicker = ({
     multiple: false,
   })
 
-
-
-  // const removeFile = () => {
-  //   if (uploadedFile) {
-  //     URL.revokeObjectURL(uploadedFile.preview)
-  //     setUploadedFile(null)
-  //   }
-  // }
-
   return (
     <div
       {...getRootProps()}

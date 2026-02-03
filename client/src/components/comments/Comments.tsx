@@ -62,7 +62,6 @@ export default function Comments({ post }: { post: PostType }) {
 
     updateComment({ commentId, payload: { likes: updatedLikes } }, {
       onSuccess: () => {
-        console.log("liked updated");
       },
       onError: (error) => {
         console.error("Error updating likes:", error.message);
