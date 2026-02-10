@@ -1,10 +1,7 @@
-import Imagekit from "imagekit";
-import Image from "../models/image.model.ts"
+import { toFile } from "@imagekit/nodejs";
 import sharp from "sharp";
-import fs from "fs/promises";
-import http from "http";
-import https from "https";
-import path from "path";
+import Image from "../models/image.model.ts";
+import { getImageBuffer, getImagekitClient, optimizeImageBuffer } from "../utils/image.ts";
 
 function buildTransformationString(parsedTextOptions: any[], parsedCanvasOptions: any, width: number, height: number, croppingStrategy: string) {
   const bg = (parsedCanvasOptions?.backgroundColor || "#ffffff").substring(1);
@@ -13,57 +10,20 @@ function buildTransformationString(parsedTextOptions: any[], parsedCanvasOptions
   const textArray = parsedTextOptions || [];
 
   const overlays = (textArray as any[])
-    .map((t: any) => {
+    .map((t: any, index) => {
       if (!t || !t.text) return "";
-      const lx = Math.round(((t.left || 0) * width) / 375);
-      const ly = Math.round(((t.top || 0) * height) / (parsedCanvasOptions?.height || height));
-      const fs = Math.round((t.fontSize || 16) * width / 372);
+      const lx = Math.round(((t.left || 0) * width) / 359);
+      const ly = Math.round(((t.top || 0) * height) / (parsedCanvasOptions?.size?.height || height));
+      const fs = Math.round((t.fontSize || 16) * width / 359);
       const co = (t.color || "#000000").substring(1);
-      return `,l-text,i-${encodeURIComponent(t.text)},fs-${fs},lx-${lx},ly-${ly},co-${co},l-end`;
+      if (index === 0) {
+        return `,l-text,i-${encodeURIComponent(t.text)},fs-${fs},lx-${lx},ly-${ly},co-${co},l-end`
+      }
+      return `:l-text,i-${encodeURIComponent(t.text)},fs-${fs},lx-${lx},ly-${ly},co-${co},l-end`;
     })
     .join("");
 
   return base + overlays;
-}
-
-const IK_PUBLIC_KEY = process.env.IK_PUBLIC_KEY
-const IK_PRIVATE_KEY = process.env.IK_PRIVATE_KEY
-const IK_URL_ENDPOINT = process.env.IK_URL_ENDPOINT
-
-async function fetchBufferFromUrl(url: string): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const client = url.startsWith("https") ? https : http;
-    const req = client.get(url, (res) => {
-      const code = res.statusCode || 0;
-      if (code >= 400) {
-        reject(new Error(`Failed to fetch image: ${code}`));
-        res.resume();
-        return;
-      }
-      const chunks: Buffer[] = [];
-      res.on("data", (c) => chunks.push(Buffer.isBuffer(c) ? c : Buffer.from(c)));
-      res.on("end", () => resolve(Buffer.concat(chunks)));
-    });
-    req.on("error", reject);
-  });
-}
-
-async function getImageBuffer(media: string): Promise<Buffer> {
-  if (!media) throw new Error("No media provided");
-  if (/^https?:\/\//i.test(media)) return fetchBufferFromUrl(media);
-
-  // Try reading local file path (resolve relative to project cwd)
-  try {
-    const localPath = path.isAbsolute(media) ? media : path.resolve(process.cwd(), media.replace(/^\//, ""));
-    return await fs.readFile(localPath);
-  } catch (e) {
-    // Fallback: if we have an ImageKit endpoint, build a public URL and fetch it
-    if (!IK_URL_ENDPOINT) throw e;
-    const base = IK_URL_ENDPOINT.replace(/\/$/, "");
-    const filePath = media.startsWith("/") ? media : `/${media}`;
-    const url = `${base}${filePath}`;
-    return fetchBufferFromUrl(url);
-  }
 }
 
 export const getUserImages = async (req: any, res: any) => {
@@ -73,57 +33,36 @@ export const getUserImages = async (req: any, res: any) => {
 };
 
 export const createImage = async (req: any, res: any) => {
+  try {
+    const media = req.files?.media;
+    if (!media?.data) {
+      return res.status(400).json({ message: "Image is required!" });
+    }
 
-  const media = req.files.media;
+    const imagekit = getImagekitClient();
+    const { buffer, metadata } = await optimizeImageBuffer(media.data as Buffer);
 
-  if (!media) {
-    return res.status(400).json({ message: "Image is required!" });
-  }
-
-  const metadata = await sharp(media.data).metadata();
-
-  const originalOrientation =
-    metadata.width < metadata.height ? "portrait" : "landscape";
-
-  let width;
-  let height;
-
-  width = metadata.width;
-  height = metadata.width / Number(originalOrientation);
-
-  const imagekit = new Imagekit({
-    publicKey: IK_PUBLIC_KEY!,
-    privateKey: IK_PRIVATE_KEY!,
-    urlEndpoint: IK_URL_ENDPOINT!,
-  });
-
-  const transformationString = `w-${width},h-${height}`;
-
-  imagekit
-    .upload({
-      file: media.data,
-      fileName: media.name,
+    const file = await toFile(buffer, media.name || "image");
+    const response = await imagekit.files.upload({
+      file,
+      fileName: media.name || "image",
       folder: "pins",
-      transformation: {
-        pre: transformationString,
-      },
-    })
-    .then(async (response) => {
-
-      const newImage = await Image.create({
-        fileId: response.fileId,
-        user: req.userId,
-        media: response.filePath,
-        published: false,
-        width: response.width,
-        height: response.height,
-      });
-      return res.status(201).json(newImage);
-    })
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).json(err);
     });
+
+    const newImage = await Image.create({
+      fileId: response.fileId,
+      user: req.userId,
+      media: response.filePath,
+      published: false,
+      width: response.width ?? metadata.width,
+      height: response.height ?? metadata.height,
+    });
+
+    return res.status(201).json(newImage);
+  } catch (err: any) {
+    console.error("createImage failed:", err);
+    return res.status(500).json({ message: err.message || "Failed to create image" });
+  }
 };
 
 export const updateImage = async (req: any, res: any) => {
@@ -209,23 +148,18 @@ export const updateImage = async (req: any, res: any) => {
   let croppingStrategy = "";
 
   if (parsedCanvasOptions.size.name !== "original") {
-    if (Number(originalAspectRatio) > Number(clientAspectRatio)) {
-      croppingStrategy = ",cm-pad_resize";
-    }
-  } else {
-    if (
-      originalOrientation === "landscape" &&
-      parsedCanvasOptions.orientation === "portrait"
-    ) {
-      croppingStrategy = ",cm-pad_resize";
-    }
+    croppingStrategy = ",cm-pad_resize";
   }
+  // else {
+  //   if (
+  //     originalOrientation === "landscape" &&
+  //     parsedCanvasOptions.orientation === "portrait"
+  //   ) {
+  //     croppingStrategy = ",cm-pad_resize";
+  //   }
+  // }
 
-  const imagekit = new Imagekit({
-    publicKey: IK_PUBLIC_KEY!,
-    privateKey: IK_PRIVATE_KEY!,
-    urlEndpoint: IK_URL_ENDPOINT!,
-  });
+  const imagekit = getImagekitClient();
 
   const transformationString = buildTransformationString(
     parsedTextOptions,
@@ -235,13 +169,14 @@ export const updateImage = async (req: any, res: any) => {
     croppingStrategy
   );
 
+  const file = await toFile(imageBuffer, image.media.split("/").pop() || "image");
   try {
-    const response = await imagekit.upload({
-      file: imageBuffer,
+    const response = await imagekit.files.upload({
+      file: file,
       fileName: image.media.split("/").pop() || "image",
       folder: "pins",
       transformation: {
-        pre: transformationString,
+        pre: transformationString
       },
     });
 
@@ -255,7 +190,7 @@ export const updateImage = async (req: any, res: any) => {
     });
 
     try {
-      await imagekit.deleteFile(image.fileId);
+      await imagekit.files.delete(image.fileId);
     } catch (e) {
       console.warn('Failed to delete old file from ImageKit:', e);
     }
@@ -274,6 +209,160 @@ export const updateImage = async (req: any, res: any) => {
 
 };
 
+// export const updateImage = async (req: any, res: any) => {
+//   const imageId = req.params.id;
+//   const {
+//     textOptions,
+//     canvasOptions,
+//   } = req.body;
+
+//   if ((!textOptions && !canvasOptions)) {
+//     return res.status(400).json({ message: "Options are required!" });
+//   }
+
+//   const image = await Image.findById(imageId);
+
+//   if (!image) {
+//     return res.status(404).json({ message: "Image not found!" });
+//   }
+
+//   const parsedTextOptions = parseJsonSafely(textOptions, []);
+//   const parsedCanvasOptions = parseJsonSafely(canvasOptions, {});
+//   // const normalizedTextOptions = Array.isArray(parsedTextOptions)
+//   //   ? parsedTextOptions
+//   //   : [parsedTextOptions].filter(Boolean);
+
+//   let imageBuffer: Buffer;
+//   try {
+//     imageBuffer = await getImageBuffer(image.media);
+//   } catch (err: any) {
+//     console.error('Failed to load image media:', err);
+//     return res.status(500).json({ message: 'Failed to load image media', error: String(err) });
+//   }
+
+//   const metadata = await sharp(imageBuffer).metadata();
+
+//   const originalOrientation =
+//     metadata.width < metadata.height ? "portrait" : "landscape";
+//   const originalAspectRatio = metadata.width / metadata.height;
+
+//   const canvasName = parsedCanvasOptions?.name || "original";
+//   const canvasSize = parsedCanvasOptions?.size || {};
+//   const canvasOrientation = parsedCanvasOptions?.orientation || originalOrientation;
+
+//   const clientAspectRatio = canvasName !== "original"
+//     ? (canvasSize.width || metadata.width) / (canvasSize.height || metadata.height)
+//     : (canvasOrientation === originalOrientation ? originalAspectRatio : 1 / originalAspectRatio);
+
+//   let width = canvasSize.width || metadata.width || 0;
+//   let height = canvasSize.height || 0;
+//   if (!height && width) {
+//     height = Math.round(width / clientAspectRatio);
+//   }
+//   if (!width && height) {
+//     width = Math.round(height * clientAspectRatio);
+//   }
+
+//   // `parsedTextOptions` is an array of text overlays; per-text positions are
+//   // calculated inside `buildTransformationArray`, so skip single-position math.
+
+//   let cropMode: "pad_resize" | undefined = undefined;
+
+//   if (canvasName !== "original") {
+//     if (Number(originalAspectRatio) > Number(clientAspectRatio)) {
+//       cropMode = "pad_resize";
+//     }
+//   } else if (originalOrientation === "landscape" && canvasOrientation === "portrait") {
+//     cropMode = "pad_resize";
+//   }
+
+//   if (!cropMode && parsedCanvasOptions?.backgroundColor && (canvasSize.width || canvasSize.height)) {
+//     cropMode = "pad_resize";
+//   }
+
+//   const imagekit = getImagekitClient();
+
+//   const transformation = buildTransformationArray(
+//     parsedTextOptions,
+//     parsedCanvasOptions,
+//     width,
+//     height,
+//     cropMode
+//   );
+
+//   const textOverlayUrl = imagekit.helper.buildSrc({
+//     urlEndpoint: process.env.IK_URL_ENDPOINT!,
+//     src: image.media,
+//     transformation
+//   });
+
+//   console.log("textOverlayUrl", textOverlayUrl);
+//   console.log("transformation", transformation);
+
+//   return res.status(200).json({
+//     message: "Image updated successfully.",
+//   })
+
+//   try {
+//     // const fileName = image.media.split("/").pop() || "image";
+//     // const response = await imagekit.files.upload({
+//     //   file: await toFile(imageBuffer, fileName),
+//     //   fileName,
+//     //   folder: "pins",
+//     //   transformation: [
+//     //     {
+//     //       width: width.toString(),
+//     //       height: height.toString(),
+//     //       overlay: {
+//     //         type: 'text',
+//     //         text: 'Sample Text Overlay',
+//     //         position: {
+//     //           x: 50,
+//     //           y: 50,
+//     //           focus: 'center',
+//     //         },
+//     //         transformation: [
+//     //           {
+//     //             fontSize: 40,
+//     //             fontFamily: 'Arial',
+//     //             fontColor: 'FFFFFF',
+//     //             typography: 'b', // bold
+//     //           },
+//     //         ],
+//     //       },
+//     //     },
+//     //   ]
+//     // });
+
+//     // const newImage = await Image.create({
+//     //   fileId: response.fileId,
+//     //   user: req.userId,
+//     //   media: response.filePath,
+//     //   published: false,
+//     //   width: response.width,
+//     //   height: response.height,
+//     // });
+
+//     // try {
+//     //   await imagekit.files.delete(image.fileId);
+//     // } catch (e) {
+//     //   console.warn("Failed to delete old file from ImageKit:", e);
+//     // }
+
+//     // try {
+//     //   await Image.findByIdAndDelete(imageId);
+//     // } catch (e) {
+//     //   console.warn("Failed to delete old DB image record:", e);
+//     // }
+
+//     // return res.status(201).json({ message: "Image created!", data: newImage });
+//   } catch (err) {
+//     console.error('Upload failed:', err);
+//     return res.status(500).json(err);
+//   }
+
+// };
+
 export const deleteImage = async (req: any, res: any) => {
   const imageId = req.params.id;
   const image = await Image.findById(imageId);
@@ -281,13 +370,9 @@ export const deleteImage = async (req: any, res: any) => {
     return res.status(404).json({ message: "Image not found!" });
   }
 
-  const imagekit = new Imagekit({
-    publicKey: IK_PUBLIC_KEY!,
-    privateKey: IK_PRIVATE_KEY!,
-    urlEndpoint: IK_URL_ENDPOINT!,
-  });
+  const imagekit = getImagekitClient();
   try {
-    await imagekit.deleteFile(image.fileId);
+    await imagekit.files.delete(image.fileId);
     await Image.findByIdAndDelete(imageId);
   } catch (error) {
     return res.status(500).json({ message: "Failed to delete image.", error });

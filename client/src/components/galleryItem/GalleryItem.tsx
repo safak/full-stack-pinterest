@@ -31,7 +31,7 @@ const GalleryItem = ({ item, className, style }: { item: Pin; className?: string
 
   if (status === "pending") {
     return (
-      <div className="w-full flex mt-6 justify-center">
+      <div className="py-12 w-full h-full flex justify-center">
         <Spinner />
       </div>
     )

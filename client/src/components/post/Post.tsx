@@ -55,7 +55,7 @@ const Post = ({ postId }: { postId: string }) => {
     <>
       <DisplayFullImage isOpen={isOpen} setIsOpen={setIsOpen} post={post.data} />
       <div className="flex flex-col rounded-2xl border min-w-70 min-h-140 h-max py-2 px-4 relative">
-        <div className="flex justify-between gap-2 md:gap-6 overflow-x-auto pb-4 w-full sticky top-20.25 z-10 bg-white border-b">
+        <div className="flex justify-between gap-2 md:gap-6 overflow-x-auto pb-4 w-full sticky top-18.25 z-10 bg-white border-b">
           <div className="hidden sm:flex items-center gap-2 ">
             <div className="flex items-center">
               <Button
@@ -63,7 +63,7 @@ const Post = ({ postId }: { postId: string }) => {
                 size="xl"
                 className="px-2!"
                 onClick={(e) => handleSaveOrLikePost(e, "like")}
-                disabled={interactStatus === "pending"}
+                disabled={interactStatus === "pending" || currentUser?._id === post?.data?.user._id}
               >
                 <Heart className={`w-7! h-7! ${pinInteractions?.data.isLiked ? "text-red-500" : ""}`} fill={pinInteractions?.data.isLiked ? "red" : "transparent"} />
               </Button>

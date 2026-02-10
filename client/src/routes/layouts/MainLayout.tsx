@@ -5,10 +5,32 @@ import AppSidebar from '@/components/sidebar/Sidebar';
 import Topbar from '@/components/topBar/Topbar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import useAuthStore from '@/lib/authStore';
+import useSocketStore from '@/lib/socketStore';
+import { useEffect } from 'react';
+import { io } from 'socket.io-client';
+import { toast, Toaster } from 'sonner';
 
+const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 function MainLayout() {
   const { currentUser } = useAuthStore();
+  const { socket, setSocket } = useSocketStore();
+
+
+
+
+  useEffect(() => {
+    const socketIo = io(apiUrl, { withCredentials: true });
+    setSocket(socketIo);
+    console.log(socketIo);
+
+    socketIo.on('disconnect', () => {
+      console.log('Disconnected from Socket.IO server');
+    });
+    return () => {
+      socket?.disconnect();
+    };
+  }, []);
 
   return (
     <div className='w-full h-screen flex'>
@@ -21,6 +43,7 @@ function MainLayout() {
         {currentUser ? <Topbar /> : <PublicNavbar />}
         <Outlet />
       </div>
+      <Toaster position='top-right' />
     </div>
   )
 }

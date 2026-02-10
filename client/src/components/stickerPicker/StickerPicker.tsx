@@ -39,21 +39,18 @@ const StickerPicker = ({ onSelect, type, setType }: { onSelect: (gif: any) => vo
       </div>
 
       <Grid
-        
+        hideAttribution={true}
         width={320}
-        className='max-h-90'
+        className='max-h-90 cursor-pointer'
         columns={3}
+        noLink={true} // disable giphy's default behavior of linking to their site on click
         // close the picker on selection
         fetchGifs={fetchFn}
         onGifClick={(gif, e) => {
-
           e.preventDefault()
           onSelect(gif)
-
         }}
-        
         gutter={6}
-
       />
     </div>
   )

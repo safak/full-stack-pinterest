@@ -45,6 +45,8 @@ const CreatePage = () => {
           }
         }, {
           onSuccess: (response) => {
+            console.log("response", response);
+
             setSelectedImage(response.data.media!);
             setUploadedFile({ file: new File([], ""), preview: response.data.media! });
 

@@ -8,7 +8,7 @@ import { handleApiError } from "./error-handler";
 
 const api: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 15000,
+  timeout: 50000,
   // Use cookies (HttpOnly) for auth; do not store tokens in JS.
   withCredentials: true,
 });

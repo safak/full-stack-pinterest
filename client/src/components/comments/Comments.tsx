@@ -1,24 +1,27 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useDeleteComment, useUpdateComment } from "@/hooks/mutations/comment.mutations";
+import { useCreateComment, useDeleteComment, useUpdateComment } from "@/hooks/mutations/comment.mutations";
 import { useGetComments } from "@/hooks/queries/comment.queries";
 import useAuthStore from "@/lib/authStore";
 import type { PostType } from "@/types";
 import { ChevronDown, ChevronUp, Ellipsis, Heart } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { format } from "timeago.js";
-import CommentField from "../commentField/CommentField";
+import InputField from "../inputField/InputField";
 import EditCommentForm from "../editCommentForm/EditCommentForm";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Separator } from "../ui/separator";
 import { Spinner } from "../ui/spinner";
+import { set } from "zod";
 
 export default function Comments({ post }: { post: PostType }) {
+  const [comment, setComment] = useState("");
   const { data: comments, status, error } = useGetComments(post._id)
   const { mutate: deleteComment } = useDeleteComment();
   const { mutate: updateComment } = useUpdateComment()
   const { currentUser } = useAuthStore();
+  const { mutate: createComment } = useCreateComment();
   const [isExpanded, setIsExpanded] = useState(false);
   const [commentsToShow, setCommentsToShow] = useState(1);
   const [isEditing, setIsEditing] = useState<{ commentId: string, editing: boolean }>({ commentId: "", editing: false });
@@ -70,6 +73,27 @@ export default function Comments({ post }: { post: PostType }) {
     });
   }
 
+  const handleAddComment = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const trimmedComment = comment.trim();
+    if (trimmedComment) {
+      const newComment = {
+        pin: post._id,
+        user: currentUser!._id,
+        description: trimmedComment,
+      };
+
+      createComment(newComment, {
+        onSuccess: (response: any) => {
+          setComment("");
+          setIsExpanded(true);
+          setCommentsToShow(response?.data?.length);
+        }
+      });
+    }
+  }
+
   return (
     <>
       <div id="comments-section" className="flex flex-col justify-center items-center w-full">
@@ -99,11 +123,11 @@ export default function Comments({ post }: { post: PostType }) {
         <Separator />
         <div className={`w-full max-w-xl rounded-2xl bg-white p-4`}>
           {/* Header */}
-          <div className="mb-3 flex items-center justify-between">
-            <p className="text-sm font-semibold">{comments.data.length || 0} Comments</p>
-            <Button variant="ghost" size="sm" className="h-auto px-0 text-xs" onClick={handleExpandComments}>
+          <div className="mb-3 flex items-center justify-between cursor-pointer" onClick={handleExpandComments}>
+            <p className="text-sm font-semibold">{comments.data.length || "No"} Comments</p>
+            {<Button variant="ghost" size="sm" className="h-auto px-0 text-xs" >
               {isExpanded ? <ChevronUp className="ml-auto" /> : <ChevronDown className="ml-auto" />}
-            </Button>
+            </Button>}
           </div>
 
           {/* Comments list */}
@@ -116,12 +140,13 @@ export default function Comments({ post }: { post: PostType }) {
                 ) : (
                   <>
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={comment.user.img || ""} />
-                      <AvatarFallback className="text-xs">
-                        {comment.user.username.charAt(0).toUpperCase()}
-                      </AvatarFallback>
+                      <Link className="flex w-full" to={"/user/" + comment.user._id}>
+                        <AvatarImage src={comment.user.img || ""} />
+                        <AvatarFallback className="text-xs">
+                          {comment.user.username.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Link>
                     </Avatar>
-
 
                     <div className="flex-1 text-sm">
                       <p>
@@ -195,8 +220,18 @@ export default function Comments({ post }: { post: PostType }) {
             ))}
           </div>
         </div>
-        {currentUser?._id && <CommentField postId={post._id} userId={currentUser._id} />}
-      </div>
+        {currentUser?._id && (
+          <InputField
+            postId={post._id}
+            userId={currentUser._id}
+            handleSubmit={handleAddComment}
+            input={comment}
+            setInput={setComment}
+            inputType="comment"
+            addRequest={createComment}
+          />
+        )}
+      </div >
     </>
   );
 }

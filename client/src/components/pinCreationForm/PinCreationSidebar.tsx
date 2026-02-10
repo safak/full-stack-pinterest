@@ -36,7 +36,7 @@ const PinCreationSidebar = ({
 
   return (
     <div className="w-full flex-2 relative">
-      <SidebarProvider defaultOpen={true} className='w-full border-2 '>
+      <SidebarProvider defaultOpen={true} className='w-full'>
         <Sidebar variant="sidebar" side="right" collapsible="icon" className="absolute! top-0! right-0! w-full">
           <SidebarHeader>
             <SidebarMenu >
@@ -48,7 +48,7 @@ const PinCreationSidebar = ({
                 }
                 <SidebarTrigger onClick={() => setSidebarExpanded(!sidebarExpanded)} />
               </SidebarMenuItem>
-              <div className="w-full flex justify-center items-center my-2">
+              {sidebarExpanded && <div className="w-full flex justify-center items-center my-2">
                 <Button
                   className="w-full bg-black/20 text-black hover:bg-black/30"
                   size={"lg"}
@@ -62,59 +62,61 @@ const PinCreationSidebar = ({
                 >
                   Create new
                 </Button>
-              </div>
+              </div>}
             </SidebarMenu>
           </SidebarHeader>
-          <SidebarContent>
-            <SidebarGroup>
-              <SidebarGroupContent>
-                <SidebarMenu className="flex flex-col gap-7" >
-                  {userImagesStatus === "pending" || deleteStatus === "pending" || createImageStatus === "pending"
-                    ? (
-                      <div className="flex justify-center w-full">
-                        <Spinner />
-                      </div>
-                    ) : userImagesStatus === "error"
+          {sidebarExpanded && (
+            <SidebarContent>
+              <SidebarGroup>
+                <SidebarGroupContent>
+                  <SidebarMenu className="flex flex-col gap-7" >
+                    {userImagesStatus === "pending" || deleteStatus === "pending" || createImageStatus === "pending"
                       ? (
-                        <div className="w-fulltext-red-500">
-                          Error loading images
+                        <div className="flex justify-center w-full">
+                          <Spinner />
                         </div>
-                      ) : (
-                        userImages?.data.map((image) => (
-                          <SidebarMenuItem key={image.media}  >
-                            <SidebarMenuButton className="relative" asChild>
-                              <div
-                                className={`flex rounded-2xl min-h-16 w-full p-2 justify-between gap-2 items-center cursor-pointer  ${selectedImage === image.media ? "bg-black/10 border border-black" : ""}`}
-                                onClick={() => {
-                                  setSelectedImage(image.media);
-                                  return setUploadedFile({ preview: image.media, file: new File([], "") });
-                                }}
-                              >
-                                <div className="w-full flex items-center justify-between! gap-2">
-                                  <Image item={{ media: image.media, className: "rounded-md max-w-12 h-12 max-h-12" }} />
-                                  <p className="text-sm">Select image</p>
-                                  <DropdownMenu >
-                                    <DropdownMenuTrigger asChild>
-                                      <SidebarMenuButton className="max-w-8 flex justify-center" size={"sm"}>
-                                        <Ellipsis size={8} className="cursor-pointer" />
-                                      </SidebarMenuButton>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="start">
-                                      <DropdownMenuItem onClick={() => handleDeleteImage(image._id!)}>Delete</DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
+                      ) : userImagesStatus === "error"
+                        ? (
+                          <div className="w-fulltext-red-500">
+                            Error loading images
+                          </div>
+                        ) : (
+                          userImages?.data.map((image) => (
+                            <SidebarMenuItem key={image.media}  >
+                              <SidebarMenuButton className="relative" asChild>
+                                <div
+                                  className={`flex rounded-2xl min-h-16 w-full p-2 justify-between gap-2 items-center cursor-pointer  ${selectedImage === image.media ? "bg-black/10 border border-black" : ""}`}
+                                  onClick={() => {
+                                    setSelectedImage(image.media);
+                                    return setUploadedFile({ preview: image.media, file: new File([], "") });
+                                  }}
+                                >
+                                  <div className="w-full flex items-center justify-between! gap-2">
+                                    <Image item={{ media: image.media, className: "rounded-md max-w-12 h-12 max-h-12" }} />
+                                    <p className="text-sm">Select image</p>
+                                    <DropdownMenu >
+                                      <DropdownMenuTrigger asChild>
+                                        <SidebarMenuButton className="max-w-8 flex justify-center" size={"sm"}>
+                                          <Ellipsis size={8} className="cursor-pointer" />
+                                        </SidebarMenuButton>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="start">
+                                        <DropdownMenuItem onClick={() => handleDeleteImage(image._id!)}>Delete</DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  </div>
                                 </div>
-                              </div>
 
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        ))
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          ))
 
-                      )}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
+                        )}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </SidebarContent>
+          )}
           <SidebarSeparator className="mx-0" />
         </Sidebar>
       </SidebarProvider>

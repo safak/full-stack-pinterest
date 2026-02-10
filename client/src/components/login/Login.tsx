@@ -63,7 +63,7 @@ const Login = ({ changeModal }: { changeModal: ChangeModalCallback }) => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="sm:max-w-70">
             <DialogHeader className="flex items-center justify-center mb-6">
               <AppLogo showFull={false} />
-              <DialogTitle className="text-center font-bold text-3xl">Log in to Interest</DialogTitle>
+              <DialogTitle className="text-center font-bold text-3xl">Log in to Interest Hub</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4">
               <div className="grid gap-3">
@@ -124,7 +124,7 @@ const Login = ({ changeModal }: { changeModal: ChangeModalCallback }) => {
             <div className="text-xs text-center font-medium flex flex-col justify-center items-center gap-2 ">
               <span>Facebook login is no longer available</span>
               <span className="font-bold">Update login method</span>
-              <p className="text-gray-500 mb-4">By continuing, you agree to Pinterest's <span className="underline cursor-pointer">Terms of Service</span>  and acknowledge you've read our <span className="underline cursor-pointer">Privacy Policy</span> .<span className="underline cursor-pointer">Notice at collection.</span>
+              <p className="text-gray-500 mb-4">By continuing, you agree to Interest Hub's <span className="underline cursor-pointer">Terms of Service</span>  and acknowledge you've read our <span className="underline cursor-pointer">Privacy Policy</span> .<span className="underline cursor-pointer">Notice at collection.</span>
               </p>
               <Button variant="link" className="text-blue-800 underline" onClick={() => changeModal("signup")}>Create new account</Button>
             </div>

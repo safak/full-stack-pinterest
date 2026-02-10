@@ -1,16 +1,14 @@
-import User from "../models/user.model.ts"
-import Follow from "../models/follow.model.ts"
+import { toFile } from "@imagekit/nodejs"
 import bcrypt from 'bcryptjs'
 import jwt from "jsonwebtoken"
-import ImageKit from "imagekit"
-
-const IK_PUBLIC_KEY = process.env.IK_PUBLIC_KEY
-const IK_PRIVATE_KEY = process.env.IK_PRIVATE_KEY
-const IK_URL_ENDPOINT = process.env.IK_URL_ENDPOINT
+import Follow from "../models/follow.model.ts"
+import User from "../models/user.model.ts"
+import { createNotificationService } from "../services/notificationService.ts"
+import { getImagekitClient, optimizeImageBuffer } from "../utils/image.ts"
 
 export const getUser = async (req: any, res: any) => {
   const id = req.params?.id || req.query?.id
-  if (!id) return res.status(400).json({ message: "Missing pin id." })
+  if (!id) return res.status(400).json({ message: "Missing user id." })
 
   const user = await User.findById(id)
   if (!user) return res.status(404).json({ message: "User not found." })
@@ -40,7 +38,18 @@ export const getUser = async (req: any, res: any) => {
 }
 
 export const getUsers = async (req: any, res: any) => {
-  const user = await User.find()
+  const q = req?.query?.q
+  let query = {}
+  if (q && typeof q === "string") {
+    query = {
+      $or: [
+        { username: { $regex: q, $options: "i" } },
+        { displayName: { $regex: q, $options: "i" } }
+      ]
+    }
+  }
+
+  const user = await User.find(query).select("-hashedPassword")
   return res.status(200).json({ message: "Users fetched successfully.", data: user })
 }
 
@@ -60,29 +69,20 @@ export const updateUser = async (req: any, res: any) => {
       return res.status(404).json({ message: "User not found" })
     }
 
-    const imagekit = new ImageKit({
-      publicKey: IK_PUBLIC_KEY!,
-      privateKey: IK_PRIVATE_KEY!,
-      urlEndpoint: IK_URL_ENDPOINT!,
-    });
+    const imagekit = getImagekitClient();
+
 
     if (existingUser?.img && existingUser.imgFileId && (media || (user && (user.img === null || user.img === 'null')))) {
       // Delete existing image from ImageKit
-      imagekit.deleteFile(existingUser.imgFileId, function (error, result) {
-        if (error) {
-          console.log("Error deleting file:", error);
-        }
-        else {
-          console.log("File deleted successfully:", result);
-        }
-      });
+      await imagekit.files.delete(existingUser.imgFileId);
     }
     if (media) {
+      const { buffer } = await optimizeImageBuffer(media.data as Buffer);
       const transformationString = `w-${80},h-${80}`;
-
-      imgUploadResponse = await imagekit
+      const file = await toFile(buffer, media.name || "image");
+      imgUploadResponse = await imagekit.files
         .upload({
-          file: media.data,
+          file: file,
           fileName: media.name,
           folder: "user-images",
           transformation: {
@@ -141,6 +141,15 @@ export const followUser = async (req: any, res: any) => {
       following: user._id
     })
     await newFollow.save()
+    const notificationPayload = {
+      sender: req.userId,
+      receiver: user._id,
+      type: "FOLLOW",
+      entityId: user._id,
+      entityType: "User",
+      message: `Someone started following you.`,
+    };
+    await createNotificationService(notificationPayload);
   }
 
   return res.status(200).json({ message: "Following successfully updated." })

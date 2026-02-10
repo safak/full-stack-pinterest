@@ -17,7 +17,7 @@ export const getUserBoards = async (req: any, res: any) => {
     }
 
   }))
-  return res.status(200).json({ message: "User boards fetched successfully", data: boardsWithPinsDetails })
+  return res.status(200).json({ message: "User boards fetched successfully", data: boardsWithPinsDetails.length > 0 ? boardsWithPinsDetails : [] })
 }
 
 export const createBoard = async (req: any, res: any) => {

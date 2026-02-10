@@ -17,6 +17,8 @@ import * as z from "zod"
 import AppLogo from "../AppLogo"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
 import { Spinner } from "../ui/spinner"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group"
+import { EyeIcon, EyeOffIcon } from "lucide-react"
 
 const formSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters long").max(20, "Username must not be more than 20 characters"),
@@ -35,8 +37,8 @@ type FormData = z.infer<typeof formSchema>
 const Signup = ({ changeModal }: { changeModal: ChangeModalCallback }) => {
   const [message, setMessage] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const { setCurrentUser } = useAuthStore();
-
   const { mutate, status } = useRegisterUser();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -112,7 +114,7 @@ const Signup = ({ changeModal }: { changeModal: ChangeModalCallback }) => {
                       </FormItem>
                     )}
                   />
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="password"
                     render={({ field }) => (
@@ -126,6 +128,36 @@ const Signup = ({ changeModal }: { changeModal: ChangeModalCallback }) => {
                             {...field}
                           />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  /> */}
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+
+                      <FormItem>
+                        <FormLabel className="text-xs text-muted-foreground">Password</FormLabel>
+                        <FormControl>
+                          <InputGroup className="rounded-xl border-2 py-6 placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0">
+                            <InputGroupInput
+                              id="password"
+                              type={showPassword ? "text" : "password"}
+                              placeholder="Password"
+
+                              {...field}
+                            />
+                            <InputGroupAddon align="inline-end">
+                              {showPassword ? (
+                                <EyeIcon className="cursor-pointer" onClick={() => setShowPassword(false)} />
+                              ) : (
+                                <EyeOffIcon className="cursor-pointer" onClick={() => setShowPassword(true)} />
+                              )}
+                            </InputGroupAddon>
+                          </InputGroup>
+                        </FormControl>
+                        {/* <EyeIcon /> */}
                         <FormMessage />
                       </FormItem>
                     )}
@@ -177,7 +209,7 @@ const Signup = ({ changeModal }: { changeModal: ChangeModalCallback }) => {
                 </Button>
               </div>
               <div className="text-xs text-center font-medium flex flex-col justify-center items-center gap-2 ">
-                <p className="text-gray-500 mb-4">By continuing, you agree to Pinterest's <span className="underline cursor-pointer"> Business Terms of Service</span>  and acknowledge you've read our <span className="underline cursor-pointer">Privacy Policy</span> .<span className="underline cursor-pointer">Notice at collection.</span>
+                <p className="text-gray-500 mb-4">By continuing, you agree to Interest Hub's <span className="underline cursor-pointer"> Business Terms of Service</span>  and acknowledge you've read our <span className="underline cursor-pointer">Privacy Policy</span> .<span className="underline cursor-pointer">Notice at collection.</span>
                 </p>
               </div>
             </form>

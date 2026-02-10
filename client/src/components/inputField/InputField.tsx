@@ -1,39 +1,36 @@
-import { useCreateComment } from '@/hooks/mutations/comment.mutations';
 import EmojiPicker from 'emoji-picker-react';
-import { Smile, Sticker } from 'lucide-react';
+import { SendHorizontal, Smile, Sticker } from 'lucide-react';
 import { useState } from 'react';
 import Pickers from '../pickers/Pickers';
 import StickerPicker from '../stickerPicker/StickerPicker';
 import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 
-const CommentField = ({ postId, userId }: { postId: string, userId: string }) => {
-  const [comment, setComment] = useState("");
-  const { mutate: createComment } = useCreateComment();
+const InputField = ({
+  postId,
+  userId,
+  handleSubmit,
+  input,
+  setInput,
+  inputType,
+  addRequest,
+  inputPlaceholder,
+}: {
+  postId?: string,
+  userId: string,
+  handleSubmit: any,
+  input: string,
+  setInput: React.Dispatch<React.SetStateAction<string>>
+  inputType: string
+  addRequest: any
+  inputPlaceholder?: string,
+}) => {
   const [type, setType] = useState<string>('');
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
   const [stickerPickerOpen, setStickerPickerOpen] = useState<boolean>(false);
 
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmedComment = comment.trim();
-    if (trimmedComment) {
-      const newComment = {
-        pin: postId,
-        user: userId,
-        description: trimmedComment,
-      };
-
-      createComment(newComment, {
-        onSuccess: () => {
-          setComment("");
-        }
-      });
-    }
-  }
-
   const handleSelectEmoji = (emojiData: any) => {
-    setComment((prev) => prev + emojiData.emoji);
+    setInput((prev) => prev + emojiData.emoji);
   }
 
   const handleSelectSticker = (stickerData: any) => {
@@ -42,27 +39,28 @@ const CommentField = ({ postId, userId }: { postId: string, userId: string }) =>
     if (!url) return
 
     setStickerPickerOpen(false);
+    let newInput
 
-    const newComment = {
-      pin: postId,
-      user: userId,
-      description: `sticker::${url}`,
+    if (inputType === "comment" && postId) {
+      newInput = {
+        pin: postId,
+        user: userId,
+        description: `sticker::${url}`,
+      }
+      addRequest(newInput)
+    } else if (inputType === "chat") {
+      addRequest(`sticker::${url}`)
     }
 
-    createComment(newComment, {
-      onSuccess: () => {
-        // no-op - nothing to clear for sticker
-      }
-    })
   }
   return (
     <div className="w-full h-full min-w-50 rounded-4xl border-2 flex justify-start items-center py-1 px-2">
       <form onSubmit={handleSubmit} className="flex flex-1">
         <Input
-          value={comment}
-          placeholder="Add a comment to start conversation"
+          value={input}
+          placeholder={inputPlaceholder || "Add a comment to start conversation"}
           className="text-lg! font-medium"
-          onChange={(e) => setComment(e.target.value)}
+          onChange={(e) => setInput(e.target.value)}
         />
 
         {/* Emoji picker */}
@@ -85,6 +83,11 @@ const CommentField = ({ postId, userId }: { postId: string, userId: string }) =>
           pickerOpen={stickerPickerOpen}
           setPickerOpen={setStickerPickerOpen}
         />
+        {input !== "" && (
+          <Button type="submit" className="hover:bg-transparent p-1!" variant="ghost">
+            <SendHorizontal className='w-6! h-6!' />
+          </Button>
+        )}
       </form>
 
       {/* <Button className="hover:bg-transparent p-1!" variant="ghost">
@@ -94,4 +97,4 @@ const CommentField = ({ postId, userId }: { postId: string, userId: string }) =>
   )
 }
 
-export default CommentField
+export default InputField

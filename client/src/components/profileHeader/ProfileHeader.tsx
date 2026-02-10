@@ -1,11 +1,14 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import useAuthStore from "@/lib/authStore";
+import useDrawerStore from "@/lib/drawerStore";
 import { Ellipsis, Upload } from "lucide-react";
 import { useNavigate } from "react-router";
 import FollowButton from "../followButton/FollowButton";
+import { useGetConversationByUser } from "@/hooks/queries/message.queries";
 
 export type ProfileHeaderProps = {
+  userId: string
   avatarUrl?: string;
   name: string;
   username: string;
@@ -17,6 +20,7 @@ export type ProfileHeaderProps = {
 };
 
 export default function ProfileHeader({
+  userId,
   avatarUrl,
   name,
   username,
@@ -27,14 +31,27 @@ export default function ProfileHeader({
   isFollowing,
 }: ProfileHeaderProps) {
   const { currentUser } = useAuthStore()
+  const { setSelectedConversationId, setDrawerState, setSelectedParticipantId } = useDrawerStore();
+  const { data: conversationData } = useGetConversationByUser(userId)
   const navigate = useNavigate();
+
+  const handleOpenChat = () => {
+    if (!currentUser?._id) {
+      navigate("/auth")
+    }
+    if (conversationData?.data?._id) {
+      setSelectedConversationId(conversationData.data._id);
+    }
+    setSelectedParticipantId(userId);
+    setDrawerState({ open: true, type: "Chat" });
+  }
 
   return (
     <div className="flex flex-col items-center bg-white p-6 shadow-[rgba(0,0,15,0.5)_0px_8px_6px_0px] rounded-2xl max-w-md mx-auto mt-4">
       {/* Avatar + Name */}
       <Avatar className="h-24 w-24">
-        {avatarUrl || currentUser?.img ? (
-          <AvatarImage src={currentUser?.img || avatarUrl} />
+        {avatarUrl ? (
+          <AvatarImage src={avatarUrl || ""} />
         ) : (
           <AvatarFallback className="text-xl uppercase">
             {name.charAt(0)}
@@ -81,7 +98,7 @@ export default function ProfileHeader({
           >
             <Upload className="w-6! h-6!" size={9} />
           </Button>
-          <Button variant="secondary" className="bg-gray-200" size="xl" onClick={() => !currentUser?._id && navigate("/auth")}>
+          <Button variant="secondary" className="bg-gray-200" size="xl" onClick={handleOpenChat}>
             Message
           </Button>
           <FollowButton isFollowing={isFollowing || false} username={username} />

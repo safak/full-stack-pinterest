@@ -10,7 +10,7 @@ import type { Pin } from "@/types";
 import Image from "../image/Image";
 import "./BoardItem.css";
 
-const BoardItem = ({ item, className, style }: { item: Pin; className?: string; style?: CSSProperties }) => {
+const BoardItem = ({ item, className, style, userId }: { item: Pin; className?: string; style?: CSSProperties; userId?: string }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuthStore();
   const { mutate: interactPin, status } = useInteractPin(item._id!);
@@ -37,7 +37,7 @@ const BoardItem = ({ item, className, style }: { item: Pin; className?: string; 
               Profile
               <ChevronDown />
             </Button>
-            {currentUser && <Button
+            {currentUser && currentUser._id === userId && <Button
               onClick={handleRemovePin}
               variant="destructive"
               className="rounded-full float-right py-2 text-xs"

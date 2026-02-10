@@ -34,6 +34,7 @@ const ProfilePage = () => {
   return (
     <div className="flex flex-col">
       <ProfileHeader
+        userId={id || ""}
         avatarUrl={userData.data?.img || ""}
         name={userData.data?.displayName || ""}
         username={userData.data?.username || ""}

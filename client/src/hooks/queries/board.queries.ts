@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 export const useGetBoards = ({ userId }: { userId: string }) => {
   return useQuery({
     queryKey: ["boards", userId],
-    queryFn: () => getUserBoard(userId),
+    queryFn: () => getUserBoard(),
     retry: (count, error: ApiError) => {
       if (error.status === 401) return false;
       return count < 2;

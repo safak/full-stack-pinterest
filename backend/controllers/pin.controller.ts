@@ -1,13 +1,11 @@
-import ImageKit from 'imagekit'
+import ImageKit from '@imagekit/nodejs'
 import Pin from '../models/pin.model.ts'
 import Image from '../models/image.model.ts'
 import Like from '../models/like.model.ts'
 import Save from '../models/save.model.ts'
 import jwt from 'jsonwebtoken'
-
-const IK_PUBLIC_KEY = process.env.IK_PUBLIC_KEY
-const IK_PRIVATE_KEY = process.env.IK_PRIVATE_KEY
-const IK_URL_ENDPOINT = process.env.IK_URL_ENDPOINT
+import { createNotificationService } from '../services/notificationService.ts'
+import { getImagekitClient } from '../utils/image.ts'
 
 // GET ALL PINS
 export const getPins = async (req: any, res: any) => {
@@ -53,18 +51,14 @@ export const createPin = async (req: any, res: any) => {
     return res.status(400).json({ message: "Missing required fields." })
   }
   try {
-    const imagekit = new ImageKit({
-      publicKey: IK_PUBLIC_KEY!,
-      privateKey: IK_PRIVATE_KEY!,
-      urlEndpoint: IK_URL_ENDPOINT!,
-    });
+    const imagekit = getImagekitClient();
 
     const image = await Image.findById(pin.imageId);
     if (!image) {
       return res.status(404).json({ message: "Image not found." });
     }
 
-    const imageDetails = await imagekit.getFileDetails(image.fileId);
+    const imageDetails = await imagekit.files.get(image.fileId);
 
 
     // flag image as published
@@ -190,6 +184,15 @@ export const interactPin = async (req: any, res: any) => {
         pin: id,
         user: userId,
       });
+      const notificationPayload = {
+        sender: userId,
+        receiver: pin.user,
+        type: "PIN_LIKE",
+        entityId: id,
+        entityType: "Pin",
+        message: `Someone liked your post.`,
+      };
+      await createNotificationService(notificationPayload);
     }
   } else {
     const isSaved = await Save.findOne({
@@ -206,11 +209,6 @@ export const interactPin = async (req: any, res: any) => {
       await Save.create({
         pin: id,
         user: userId,
-      });
-
-      const isSaved = await Save.findOne({
-        user: userId,
-        pin: id,
       });
     }
   }

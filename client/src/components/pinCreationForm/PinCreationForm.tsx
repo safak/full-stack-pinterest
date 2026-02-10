@@ -22,6 +22,7 @@ import { Spinner } from "../ui/spinner"
 import PinCreationSidebar from "./PinCreationSidebar"
 import { useNavigate } from "react-router"
 import useAuthStore from "@/lib/authStore"
+import { toast } from "sonner"
 
 
 
@@ -130,6 +131,8 @@ export function PinCreationForm({
         },
         onError: (error) => {
           console.error("Error creating image:", error);
+          setUploadedFile(null);
+          toast.error("Failed to upload image. Please try again.");
         },
       })
     }
@@ -154,7 +157,7 @@ export function PinCreationForm({
 
   return (
     <div className="min-h-196 flex bg-background p-6">
-      <div className="mx-auto flex-10">
+      <div className="mr-4 flex-10">
         <Form {...form} >
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col justify-center gap-6 lg:flex-row lg:gap-8  mx-auto w-full">
             {/* Left side - File Upload */}

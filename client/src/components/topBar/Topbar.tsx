@@ -25,6 +25,7 @@ const Topbar = () => {
     try {
       await mutateAsync();
       removeCurrentUser();
+      window.location.reload();
     } catch (err: any) {
       setError(err);
       setTimeout(() => setError(null), 3000);
