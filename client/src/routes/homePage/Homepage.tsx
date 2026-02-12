@@ -29,7 +29,7 @@ function HomePage() {
   }
 
   return (
-    <Gallery data={allPins} loadMore={fetchNextPage} hasNextPage={hasNextPage} />
+      <Gallery data={allPins} loadMore={fetchNextPage} hasNextPage={hasNextPage} />
   )
 }
 

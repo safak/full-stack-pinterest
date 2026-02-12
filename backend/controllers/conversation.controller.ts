@@ -71,8 +71,8 @@ export const getConversationById = async (req: any, res: any) => {
       Message.countDocuments({ conversationId }),
       Message.find({ conversationId })
         .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
+        // .skip(skip)
+        // .limit(limit),
     ])
 
     const totalPages = Math.ceil(total / limit) || 1;
@@ -82,6 +82,7 @@ export const getConversationById = async (req: any, res: any) => {
     res.status(200).json({
       message: "Messages retrieved successfully",
       data: messages,
+      previousCursor: page > 1 ? page - 1 : null,
       meta: { page, limit, total, totalPages },
     });
   } catch (error: any) {

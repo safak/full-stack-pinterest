@@ -8,7 +8,7 @@ import useAuthStore from '@/lib/authStore';
 import useSocketStore from '@/lib/socketStore';
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
-import { toast, Toaster } from 'sonner';
+import { Toaster } from 'sonner';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 

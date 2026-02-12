@@ -5,15 +5,14 @@ import { useGetComments } from "@/hooks/queries/comment.queries";
 import useAuthStore from "@/lib/authStore";
 import type { PostType } from "@/types";
 import { ChevronDown, ChevronUp, Ellipsis, Heart } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 import { format } from "timeago.js";
-import InputField from "../inputField/InputField";
 import EditCommentForm from "../editCommentForm/EditCommentForm";
+import InputField from "../inputField/InputField";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Separator } from "../ui/separator";
 import { Spinner } from "../ui/spinner";
-import { set } from "zod";
 
 export default function Comments({ post }: { post: PostType }) {
   const [comment, setComment] = useState("");
@@ -28,7 +27,7 @@ export default function Comments({ post }: { post: PostType }) {
 
   if (status === "pending") {
     return (
-      <div className="flex justify-center mt-60">
+      <div className="w-full flex justify-center my-10">
         <Spinner className="size-12" />
       </div>
     )

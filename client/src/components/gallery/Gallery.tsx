@@ -159,9 +159,13 @@ export const items = [
 const Gallery = ({ data, hasNextPage, loadMore }: any) => {
   return (
     <InfiniteScroll
+      // height={750}
+      height={850}
       dataLength={data.length}
       next={loadMore}
       hasMore={hasNextPage}
+      scrollThreshold={0.5}
+      scrollableTarget
       loader={
         <div className="flex justify-center">
           <Spinner />

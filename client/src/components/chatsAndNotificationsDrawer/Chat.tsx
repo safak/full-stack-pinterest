@@ -12,7 +12,7 @@ import useAuthStore from "@/lib/authStore";
 import useDrawerStore from "@/lib/drawerStore";
 import useSocketStore from "@/lib/socketStore";
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 import InputField from "../inputField/InputField";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -23,18 +23,24 @@ const Chat = () => {
   const { setDrawerState, selectedConversationId: conversationId, selectedParticipantId, setSelectedConversationId } = useDrawerStore();
   const [message, setMessage] = useState("");
   const { currentUser } = useAuthStore();
-  const { data: messagesData, refetch, hasPreviousPage, fetchPreviousPage } = useGetMessages({ conversationId: conversationId ?? "" });
+  const { data: messagesData, refetch} = useGetMessages({ conversationId: conversationId ?? "" });
   const { mutate: sendMessage } = useSendMessage()
   const { mutate: markMessagesAsRead } = useMarkMessagesAsRead()
   const { mutate: markNotificationAsRead } = useMarkNotificationAsRead();
   const { socket } = useSocketStore();
 
-  const { data: senderData, status: senderStatus } = useGetUser(selectedParticipantId || "");
+  const { data: senderData } = useGetUser(selectedParticipantId || "");
   const currentConversation = messagesData?.pages[0]?.data || []
-  console.log("currentConversation", currentConversation);
-  
 
-  const currentChat: any = []
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    setTimeout(() => {
+      el.scrollTop = el.scrollHeight;
+    }, 0);
+  }, [messagesData, conversationId]);
 
   const handleSendMessage = (message: string) => {
     if (!message.trim()) return;
@@ -44,7 +50,6 @@ const Chat = () => {
       ...(conversationId && { conversationId: conversationId || "" })
     }, {
       onSuccess: (response) => {
-        console.log("response", response);
         setMessage("");
         setSelectedConversationId(response.data.conversationId);
       },
@@ -93,19 +98,15 @@ const Chat = () => {
           <DrawerTitle className="w-full">{senderData?.data.displayName}</DrawerTitle>
           <Button variant={"outline"} className="flex items-center rounded-xl" onClick={() => {
             setSelectedConversationId(null);
-            setDrawerState({ open: false, type: null })}}>
+            setDrawerState({ open: false, type: null })
+          }}>
             <X />
           </Button>
         </div>
       </DrawerHeader>
       <Separator className="mb-4" />
       {/* Scroll the messages to the bottom */}
-      <div className="no-scrollbar overflow-y-auto px-4 h-full"
-        onLoad={(e) => {
-          const element = e.currentTarget;
-          element.scrollTop = element.scrollHeight;
-        }}
-      >
+      <div ref={containerRef} className="no-scrollbar overflow-y-auto px-4 h-full">
 
         {currentConversation?.length > 0 && currentConversation.map((message) => (
           <div className={`w-full mb-6 flex gap-2 items-center ${message.sender === currentUser!._id ? "flex-row-reverse" : "justify-start"}`} key={message._id}>
