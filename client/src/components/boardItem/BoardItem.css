@@ -1,0 +1,13 @@
+.collection-item {
+  -webkit-column-break-inside: avoid;
+  break-inside: avoid-column;
+}
+
+.overlay {
+  display: none;
+}
+
+.collection-item:hover .overlay {
+  display: flex !important;
+  cursor: pointer;
+}

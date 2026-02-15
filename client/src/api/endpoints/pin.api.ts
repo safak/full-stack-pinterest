@@ -1,0 +1,25 @@
+import api from "../axios";
+import type {
+  Pin,
+  CreatePinPayload,
+  UpdatePinPayload,
+  PostType,
+  PinInteraction,
+} from "@/types";
+
+
+export const getAllPins = ({ pageParam, search, userId }: { pageParam: string, search: string, userId: string }) => api.get<Pin[]>(`/pins?cursor=${pageParam}&search=${search || ""}&userId=${userId || ""}`);
+
+export const getPinById = (pinId: string) => api.get<PostType>(`/pins/${pinId}`);
+
+export const createPin = (payload: CreatePinPayload) => api.post<Pin>("/pins", payload);
+
+export const updatePin = ({ pinId, payload }: { pinId: string, payload: UpdatePinPayload }) => api.patch<Pin>(`/pins/${pinId}`, payload);
+
+export const deletePin = (pinId: string) => api.delete<void>(`/pins/${pinId}`);
+
+export const interactPin = ({ pinId, type }: { pinId: string, type: "like" | "save" }) => api.post<Pin>(`/pins/interact/${pinId}`, { type });
+
+export const checkPinInteraction = (pinId: string) => api.get<PinInteraction>(`/pins/interaction-check/${pinId}`);
+
+export const getSavedPins = (userId: string) => api.get<Pin[]>(`/pins/saved-pins/${userId}`);
